@@ -33,12 +33,7 @@
     "homepage": "https://github.com/ndycode/redpen#readme",
     "files": [
         "bin/",
-        "*.txt",
-        "content/",
-        "docs/",
-        "engineering/",
-        "marketing/",
-        "ui/",
+        "prompts/",
         "workflow/",
         "index.js"
     ],

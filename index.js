@@ -7,7 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const PROMPTS_DIR = __dirname;
+const PROMPTS_DIR = path.join(__dirname, 'prompts');
 
 /**
  * Get prompt content by name
@@ -56,16 +56,16 @@ function listPrompts() {
  */
 function getRunOrder() {
     return [
-        'analysis-prompt.txt',
-        'auth-data-safety-prompt.txt',
-        'data-consistency-prompt.txt',
-        'invariant-prompt.txt',
-        'blast-radius-prompt.txt',
-        'human-error-prompt.txt',
-        'nextjs-rendering-prompt.txt',
-        'operability-prompt.txt',
-        'optimization-prompt.txt',
-        'test-generation-prompt.txt',
+        'safety/analysis-prompt.txt',
+        'safety/auth-data-safety-prompt.txt',
+        'safety/data-consistency-prompt.txt',
+        'safety/invariant-prompt.txt',
+        'safety/blast-radius-prompt.txt',
+        'safety/human-error-prompt.txt',
+        'framework/nextjs-rendering-prompt.txt',
+        'framework/operability-prompt.txt',
+        'framework/optimization-prompt.txt',
+        'testing/test-generation-prompt.txt',
         'ui/design-tokens-enforcement-prompt.txt',
         'ui/ui-components-audit-prompt.txt',
         'ui/ui-consistency-audit-prompt.txt',
