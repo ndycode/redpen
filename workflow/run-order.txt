@@ -1,0 +1,109 @@
+CANONICAL PROMPT EXECUTION ORDER
+================================================================================
+
+PHASE 1: SYSTEM SAFETY & CORRECTNESS [A]
+--------------------------------------------------------------------------------
+Run FIRST. Backend before frontend. No exceptions.
+
+  1. analysis-prompt.txt
+  2. auth-data-safety-prompt.txt
+  3. data-consistency-prompt.txt
+  4. invariant-prompt.txt
+  5. blast-radius-prompt.txt
+  6. human-error-prompt.txt
+
+PHASE 2: FRAMEWORK & RENDERING [B]
+--------------------------------------------------------------------------------
+Rendering correctness before optimization. Caching before polish.
+
+  7. nextjs-rendering-prompt.txt
+  8. operability-prompt.txt
+  9. optimization-prompt.txt
+
+PHASE 3: TEST STRATEGY [H]
+--------------------------------------------------------------------------------
+Lock behavior BEFORE UI polish.
+
+  10. test-generation-prompt.txt
+
+PHASE 4: UI SYSTEM & DESIGN DISCIPLINE [C]
+--------------------------------------------------------------------------------
+Structure, tokens, components, consistency, accessibility.
+
+  11. ui/design-tokens-enforcement-prompt.txt
+  12. ui/ui-components-audit-prompt.txt
+  13. ui/ui-consistency-audit-prompt.txt
+  14. ui/ui-accessibility-prompt.txt
+  15. ui/ui-performance-prompt.txt
+
+PHASE 5: CONTENT & COPY [D]
+--------------------------------------------------------------------------------
+Content defines layout pressure. Finalize before mobile adaptation.
+
+  16. content/product-copy-voice-guide-prompt.txt
+  17. marketing/content-density-and-editorial-quality-prompt.txt
+
+PHASE 6: MOBILE (RESPONSIVE WEB) [E]
+--------------------------------------------------------------------------------
+Adapt finalized UI + content to mobile. Layout → nav → forms → perf.
+
+  18. ui/mobile/mobile-responsive-layout-audit-prompt.txt
+  19. ui/mobile/mobile-navigation-and-thumb-reach-prompt.txt
+  20. ui/mobile/mobile-a11y-touch-audit-prompt.txt
+  21. ui/mobile/mobile-forms-inputs-prompt.txt
+  22. ui/mobile/mobile-performance-and-hydration-prompt.txt
+  23. ui/mobile/mobile-visual-density-and-readability-prompt.txt
+
+PHASE 7: FAILURE STATES & TRUST [F]
+--------------------------------------------------------------------------------
+Cross-cutting. Validate on desktop AND mobile. Finalize after layout stability.
+
+  24. ui/error-boundary-and-fallback-ux-prompt.txt
+
+PHASE 8: UI IMPLEMENTATION (ACTION PROMPTS) [C]
+--------------------------------------------------------------------------------
+Implement changes after all audits complete.
+
+  25. ui/ui-redesign-prompt.txt
+  26. ui/ui-anti-ai-slop-redesign-prompt.txt
+
+PHASE 9: MARKETING / PUBLIC PAGES [G] (OPTIONAL)
+--------------------------------------------------------------------------------
+Marketing is optional. Run after product UI is finalized.
+
+  27. marketing/nextjs-marketing-page-de-templatization-prompt.txt
+
+PHASE 10: ENGINEERING HYGIENE [H]
+--------------------------------------------------------------------------------
+Run last and infrequently. Docs and DX.
+
+  28. docs/docs-sync-and-accuracy-prompt.txt
+  29. engineering/dx-workflow-and-pr-review-prompt.txt
+
+================================================================================
+SEQUENCE RATIONALE
+================================================================================
+
+System Safety → Framework → Tests → UI → Content → Mobile → Failure → Marketing → Hygiene
+
+- Content before Mobile: copy defines spacing, wrapping, hierarchy, truncation
+- Failure States after Mobile: must validate on all layouts before finalizing
+- This is how Stripe / Notion / Vercel sequence reviews
+
+================================================================================
+WORKFLOW / META FILES [I] - NOT IN EXECUTION ORDER
+================================================================================
+
+  workflow/PROMPT_TEMPLATE.txt
+  workflow/WORKFLOW_CONTROLLER_PROMPT.txt
+  workflow/commands-cheatsheet.txt
+  workflow/library-map.txt
+  workflow/prompt-inventory.txt
+  workflow/run-order.txt
+
+================================================================================
+EXAMPLE FILES - REFERENCE ONLY
+================================================================================
+
+  examples/api-error-handling-audit-prompt.txt
+  examples/button-consistency-audit-prompt.txt

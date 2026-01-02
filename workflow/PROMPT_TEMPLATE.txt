@@ -1,0 +1,91 @@
+================================================================================
+PROMPT TEMPLATE: [TITLE]
+================================================================================
+Role: [Senior Engineer / Security Auditor / UX Designer / etc.]
+Scope: [Which files, folders, or systems to analyze]
+================================================================================
+
+OBJECTIVE
+---------
+[One sentence describing what this prompt accomplishes]
+
+CONTEXT
+-------
+[Brief background on why this audit/task matters]
+
+================================================================================
+INSTRUCTIONS (STRICT)
+================================================================================
+
+1. SCAN
+   - [ ] List target files matching: [pattern, e.g., src/**/*.tsx]
+   - [ ] Identify: [what to look for]
+
+2. ANALYZE
+   - [ ] Check for: [specific issues, patterns, violations]
+   - [ ] Flag: [what constitutes a problem]
+   - [ ] Ignore: [what to skip]
+
+3. CLASSIFY
+   Priority levels:
+   - CRITICAL: [definition]
+   - HIGH: [definition]
+   - MEDIUM: [definition]
+   - LOW: [definition]
+
+4. OUTPUT
+   Generate a report with:
+   - Summary (counts by priority)
+   - Findings table (file, line, issue, priority, fix)
+   - Recommended fix for each issue
+
+================================================================================
+OUTPUT FORMAT (STRICT)
+================================================================================
+
+## [Audit Name] Report
+
+### Summary
+| Priority | Count |
+|----------|-------|
+| Critical | X     |
+| High     | X     |
+| Medium   | X     |
+| Low      | X     |
+
+### Findings
+
+#### [Finding 1 Title]
+- **File:** `path/to/file.tsx`
+- **Line:** 42
+- **Issue:** [description]
+- **Priority:** HIGH
+- **Fix:** [specific code change or action]
+
+[repeat for each finding]
+
+### Recommended Actions
+1. [Action 1]
+2. [Action 2]
+
+================================================================================
+RULES
+================================================================================
+
+- Do NOT modify files unless explicitly instructed
+- Do NOT skip files without documenting why
+- Do NOT invent issues; only report what exists
+- Be precise with line numbers and file paths
+- If no issues found, state: "No issues detected."
+
+================================================================================
+COMPLETION CRITERIA
+================================================================================
+
+This prompt is complete when:
+- [ ] All target files have been scanned
+- [ ] All findings are documented with fixes
+- [ ] Report is output in the specified format
+
+After completion, instruct user to issue:
+/complete [this-prompt-path]

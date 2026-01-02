@@ -1,0 +1,97 @@
+================================================================================
+PROMPT: API ERROR HANDLING AUDIT
+================================================================================
+Role: Senior Backend Engineer
+Scope: All API routes and fetch calls
+================================================================================
+
+OBJECTIVE
+---------
+Verify all API endpoints return consistent error responses and all fetch calls
+handle errors gracefully.
+
+CONTEXT
+-------
+Inconsistent error handling leads to poor UX, security leaks (stack traces),
+and difficult debugging. This audit ensures production-ready error patterns.
+
+================================================================================
+INSTRUCTIONS (STRICT)
+================================================================================
+
+1. SCAN
+   - [ ] API routes: app/api/**/*.ts, pages/api/**/*.ts
+   - [ ] Fetch calls: search for fetch(, axios., useSWR, useQuery
+
+2. ANALYZE API ROUTES
+   Each route must have:
+   - [ ] try/catch wrapping all async operations
+   - [ ] Consistent error response shape: { error: string, code?: string }
+   - [ ] Appropriate HTTP status codes (400, 401, 403, 404, 500)
+   - [ ] No stack traces in production responses
+   - [ ] Logging for 500 errors
+
+3. ANALYZE FETCH CALLS
+   Each fetch must have:
+   - [ ] Error handling (.catch or try/catch)
+   - [ ] User-facing error message (not raw error.message)
+   - [ ] Loading state management
+   - [ ] Retry logic for transient failures (optional but note if missing)
+
+4. CLASSIFY
+   - CRITICAL: Unhandled promise rejection, stack trace exposure
+   - HIGH: Missing error handling on user-facing fetch
+   - MEDIUM: Inconsistent error response shape
+   - LOW: Missing retry logic
+
+================================================================================
+OUTPUT FORMAT (STRICT)
+================================================================================
+
+## API Error Handling Audit Report
+
+### Summary
+| Priority | Count |
+|----------|-------|
+| Critical | X     |
+| High     | X     |
+| Medium   | X     |
+| Low      | X     |
+
+### API Route Findings
+
+#### Unhandled error in /api/users
+- **File:** `app/api/users/route.ts`
+- **Line:** 15-22
+- **Issue:** No try/catch around database call
+- **Priority:** CRITICAL
+- **Fix:**
+```typescript
+try {
+  const users = await db.users.findMany();
+  return Response.json(users);
+} catch (error) {
+  console.error('Failed to fetch users:', error);
+  return Response.json({ error: 'Failed to fetch users' }, { status: 500 });
+}
+```
+
+### Client Fetch Findings
+
+#### Silent failure in useProducts hook
+- **File:** `src/hooks/useProducts.ts`
+- **Line:** 8
+- **Issue:** No .catch() on fetch, errors thrown to console only
+- **Priority:** HIGH
+- **Fix:** Add error state and user notification
+
+================================================================================
+COMPLETION CRITERIA
+================================================================================
+
+Complete when:
+- [ ] All API routes audited
+- [ ] All fetch calls audited
+- [ ] Report generated with fixes
+
+After completion: /complete examples/api-error-handling-audit-prompt.txt

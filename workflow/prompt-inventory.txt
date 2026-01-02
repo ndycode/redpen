@@ -1,0 +1,69 @@
+# Prompt Inventory
+# Updated: 2026-01-02
+# Total: 29 execution prompts + 8 meta/example files
+
+## Canonical Sequence
+System Safety → Framework → Tests → UI → Content → Mobile → Failure → Marketing → Hygiene
+
+## Execution Prompts (29)
+
+### Phase 1: System Safety [A]
+analysis-prompt.txt
+auth-data-safety-prompt.txt
+data-consistency-prompt.txt
+invariant-prompt.txt
+blast-radius-prompt.txt
+human-error-prompt.txt
+
+### Phase 2: Framework & Rendering [B]
+nextjs-rendering-prompt.txt
+operability-prompt.txt
+optimization-prompt.txt
+
+### Phase 3: Test Strategy [H]
+test-generation-prompt.txt
+
+### Phase 4: UI System [C]
+ui/design-tokens-enforcement-prompt.txt
+ui/ui-components-audit-prompt.txt
+ui/ui-consistency-audit-prompt.txt
+ui/ui-accessibility-prompt.txt
+ui/ui-performance-prompt.txt
+
+### Phase 5: Content & Copy [D]
+content/product-copy-voice-guide-prompt.txt
+marketing/content-density-and-editorial-quality-prompt.txt
+
+### Phase 6: Mobile [E]
+ui/mobile/mobile-responsive-layout-audit-prompt.txt
+ui/mobile/mobile-navigation-and-thumb-reach-prompt.txt
+ui/mobile/mobile-a11y-touch-audit-prompt.txt
+ui/mobile/mobile-forms-inputs-prompt.txt
+ui/mobile/mobile-performance-and-hydration-prompt.txt
+ui/mobile/mobile-visual-density-and-readability-prompt.txt
+
+### Phase 7: Failure States [F]
+ui/error-boundary-and-fallback-ux-prompt.txt
+
+### Phase 8: UI Implementation [C - Action]
+ui/ui-redesign-prompt.txt
+ui/ui-anti-ai-slop-redesign-prompt.txt
+
+### Phase 9: Marketing [G]
+marketing/nextjs-marketing-page-de-templatization-prompt.txt
+
+### Phase 10: Hygiene [H]
+docs/docs-sync-and-accuracy-prompt.txt
+engineering/dx-workflow-and-pr-review-prompt.txt
+
+## Meta/Workflow [I]
+workflow/PROMPT_TEMPLATE.txt
+workflow/WORKFLOW_CONTROLLER_PROMPT.txt
+workflow/commands-cheatsheet.txt
+workflow/library-map.txt
+workflow/prompt-inventory.txt
+workflow/run-order.txt
+
+## Examples
+examples/api-error-handling-audit-prompt.txt
+examples/button-consistency-audit-prompt.txt

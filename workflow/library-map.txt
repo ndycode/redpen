@@ -1,0 +1,126 @@
+PROMPT LIBRARY MAP
+================================================================================
+
+CANONICAL SEQUENCE
+================================================================================
+
+System Safety → Framework → Tests → UI → Content → Mobile → Failure → Marketing → Hygiene
+
+================================================================================
+CLASSIFICATION TABLE
+================================================================================
+
+| # | Path | Cat | Lifecycle | Frequency |
+|---|------|-----|-----------|-----------|
+| 1 | analysis-prompt.txt | A | ACTIVE | PER-RELEASE |
+| 2 | auth-data-safety-prompt.txt | A | ACTIVE | PER-RELEASE |
+| 3 | data-consistency-prompt.txt | A | ACTIVE | PER-RELEASE |
+| 4 | invariant-prompt.txt | A | ACTIVE | PER-RELEASE |
+| 5 | blast-radius-prompt.txt | A | ACTIVE | PERIODIC |
+| 6 | human-error-prompt.txt | A | ACTIVE | PERIODIC |
+| 7 | nextjs-rendering-prompt.txt | B | ACTIVE | PER-RELEASE |
+| 8 | operability-prompt.txt | B | ACTIVE | PER-RELEASE |
+| 9 | optimization-prompt.txt | B | ACTIVE | PERIODIC |
+| 10 | test-generation-prompt.txt | H | ACTIVE | PER-RELEASE |
+| 11 | ui/design-tokens-enforcement-prompt.txt | C | ACTIVE | PER-PR |
+| 12 | ui/ui-components-audit-prompt.txt | C | ACTIVE | PER-PR |
+| 13 | ui/ui-consistency-audit-prompt.txt | C | ACTIVE | PER-PR |
+| 14 | ui/ui-accessibility-prompt.txt | C | ACTIVE | PER-PR |
+| 15 | ui/ui-performance-prompt.txt | C | ACTIVE | PER-RELEASE |
+| 16 | content/product-copy-voice-guide-prompt.txt | D | ACTIVE | PER-PR |
+| 17 | marketing/content-density-and-editorial-quality-prompt.txt | D | ACTIVE | PER-PR |
+| 18 | ui/mobile/mobile-responsive-layout-audit-prompt.txt | E | ACTIVE | PER-PR |
+| 19 | ui/mobile/mobile-navigation-and-thumb-reach-prompt.txt | E | ACTIVE | PER-PR |
+| 20 | ui/mobile/mobile-a11y-touch-audit-prompt.txt | E | ACTIVE | PER-PR |
+| 21 | ui/mobile/mobile-forms-inputs-prompt.txt | E | ACTIVE | PER-PR |
+| 22 | ui/mobile/mobile-performance-and-hydration-prompt.txt | E | ACTIVE | PER-RELEASE |
+| 23 | ui/mobile/mobile-visual-density-and-readability-prompt.txt | E | ACTIVE | PER-PR |
+| 24 | ui/error-boundary-and-fallback-ux-prompt.txt | F | ACTIVE | PER-RELEASE |
+| 25 | ui/ui-redesign-prompt.txt | C | ACTIVE | ONE-TIME |
+| 26 | ui/ui-anti-ai-slop-redesign-prompt.txt | D | ACTIVE | ONE-TIME |
+| 27 | marketing/nextjs-marketing-page-de-templatization-prompt.txt | G | ACTIVE | ONE-TIME |
+| 28 | docs/docs-sync-and-accuracy-prompt.txt | H | ACTIVE | PERIODIC |
+| 29 | engineering/dx-workflow-and-pr-review-prompt.txt | H | ACTIVE | PERIODIC |
+
+================================================================================
+CATEGORY LEGEND
+================================================================================
+
+A) SYSTEM SAFETY & CORRECTNESS
+B) FRAMEWORK & PERFORMANCE
+C) UI SYSTEM & DESIGN DISCIPLINE
+D) CONTENT & ANTI-AI SLOP
+E) MOBILE WEB
+F) FAILURE STATES & TRUST
+G) MARKETING / PUBLIC PAGES
+H) ENGINEERING HYGIENE
+I) WORKFLOW / META
+
+================================================================================
+SEQUENCE RATIONALE
+================================================================================
+
+Content before Mobile:
+- Copy defines spacing, wrapping, hierarchy, truncation
+- If mobile finalizes before content, content changes break mobile
+
+Failure States after Mobile:
+- Error UX is cross-cutting (desktop + mobile)
+- Must validate on all layouts before finalizing
+- Doing it early = redo work
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+auth-data-safety vs data-consistency:
+  - auth: WHO can access
+  - data: WHETHER data stays correct
+
+design-tokens vs ui-components vs ui-consistency:
+  - tokens: VALUES
+  - components: STRUCTURE
+  - consistency: CROSS-PAGE patterns
+
+product-copy-voice-guide vs content-density:
+  - voice: HOW it sounds
+  - density: WHAT it says
+
+ui-performance vs mobile-performance:
+  - ui-perf: desktop render
+  - mobile-perf: mobile bundle, hydration
+
+ui-accessibility vs mobile-a11y-touch:
+  - a11y: keyboard, screen reader
+  - touch: tap targets, motor impairment
+
+================================================================================
+DEPENDENCIES
+================================================================================
+
+ui/ui-redesign-prompt.txt REQUIRES:
+  - ui/design-tokens-enforcement-prompt.txt
+  - ui/ui-components-audit-prompt.txt
+  - ui/ui-accessibility-prompt.txt
+
+ui/ui-anti-ai-slop-redesign-prompt.txt REQUIRES:
+  - content/product-copy-voice-guide-prompt.txt
+  - marketing/content-density-and-editorial-quality-prompt.txt
+
+================================================================================
+META FILES [I]
+================================================================================
+
+workflow/PROMPT_TEMPLATE.txt
+workflow/WORKFLOW_CONTROLLER_PROMPT.txt
+workflow/commands-cheatsheet.txt
+workflow/library-map.txt
+workflow/prompt-inventory.txt
+workflow/run-order.txt
+examples/api-error-handling-audit-prompt.txt
+examples/button-consistency-audit-prompt.txt
+
+================================================================================
+CONSISTENCY ISSUES: (none)
+LIFECYCLE AMBIGUITIES: (none)
+================================================================================

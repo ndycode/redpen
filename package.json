@@ -1,0 +1,48 @@
+{
+    "name": "redpen",
+    "version": "1.0.0",
+    "description": "A senior engineer review system in a box. Production-grade prompts for auditing AI-assisted codebases.",
+    "main": "index.js",
+    "bin": {
+        "redpen": "./bin/cli.js"
+    },
+    "scripts": {
+        "test": "echo \"No tests yet\" && exit 0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/yourusername/shipkit.git"
+    },
+    "keywords": [
+        "code-review",
+        "prompts",
+        "audit",
+        "vibecoding",
+        "ai-coding",
+        "quality",
+        "guardrails",
+        "nextjs",
+        "supabase",
+        "production"
+    ],
+    "author": "",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/yourusername/shipkit/issues"
+    },
+    "homepage": "https://github.com/yourusername/shipkit#readme",
+    "files": [
+        "bin/",
+        "*.txt",
+        "content/",
+        "docs/",
+        "engineering/",
+        "marketing/",
+        "ui/",
+        "workflow/",
+        "index.js"
+    ],
+    "engines": {
+        "node": ">=16.0.0"
+    }
+}

@@ -1,0 +1,92 @@
+================================================================================
+PROMPT: BUTTON CONSISTENCY AUDIT
+================================================================================
+Role: Senior UI Engineer
+Scope: All React/Next.js components containing buttons
+================================================================================
+
+OBJECTIVE
+---------
+Ensure all buttons in the application use consistent styling, spacing, and behavior.
+
+CONTEXT
+-------
+Inconsistent button styles create a fragmented user experience and increase
+maintenance burden. This audit identifies deviations from the design system.
+
+================================================================================
+INSTRUCTIONS (STRICT)
+================================================================================
+
+1. SCAN
+   - [ ] List all files matching: src/**/*.tsx, app/**/*.tsx
+   - [ ] Identify: <button>, <Button>, onClick handlers
+
+2. ANALYZE
+   Check each button for:
+   - [ ] Uses design system Button component (not raw <button>)
+   - [ ] Has consistent padding (py-2 px-4 or equivalent)
+   - [ ] Has hover/focus states defined
+   - [ ] Has disabled state styling
+   - [ ] Icon buttons have aria-label
+   - [ ] Loading states use consistent spinner
+
+3. CLASSIFY
+   Priority levels:
+   - CRITICAL: Raw <button> with inline styles in production UI
+   - HIGH: Missing accessibility attributes
+   - MEDIUM: Inconsistent padding/sizing
+   - LOW: Minor style deviations
+
+4. OUTPUT
+   Generate findings report per output format below.
+
+================================================================================
+OUTPUT FORMAT (STRICT)
+================================================================================
+
+## Button Consistency Audit Report
+
+### Summary
+| Priority | Count |
+|----------|-------|
+| Critical | X     |
+| High     | X     |
+| Medium   | X     |
+| Low      | X     |
+
+### Findings
+
+#### Raw button element in ProductCard
+- **File:** `src/components/ProductCard.tsx`
+- **Line:** 23
+- **Issue:** Uses `<button>` instead of `<Button>` component
+- **Priority:** CRITICAL
+- **Fix:** Replace with `<Button variant="primary">Add to Cart</Button>`
+
+[continue for each finding]
+
+### Recommended Actions
+1. Create shared Button component if not exists
+2. Replace all raw <button> elements
+3. Add missing aria-labels to icon buttons
+
+================================================================================
+RULES
+================================================================================
+
+- Do NOT modify files; report only
+- Document every button found, even compliant ones (in summary)
+- Be precise with line numbers
+
+================================================================================
+COMPLETION CRITERIA
+================================================================================
+
+This prompt is complete when:
+- [ ] All component files scanned
+- [ ] All button instances catalogued
+- [ ] Report generated
+
+After completion, instruct user to issue:
+/complete examples/button-consistency-audit-prompt.txt

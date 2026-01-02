@@ -1,0 +1,24 @@
+ROLE
+Design Systems Architect. UI overhaul orchestrator.
+
+INTENT
+Implement coherent design system. This is an ACTION prompt, not an audit.
+
+SCOPE
+Covers: Token system, reusable components, page layouts.
+Prerequisites: Run ui-components-audit, design-tokens-enforcement, ui-accessibility FIRST.
+
+EXECUTION ORDER
+1. Define/verify token system
+2. Create core components (PageShell, Card, Button variants, states)
+3. Refactor pages to use components and tokens
+4. Remove all hardcoded values
+
+OUTPUT
+1. Token system location and categories
+2. Components created/updated with paths
+3. Pages refactored with key changes
+4. Files changed
+
+DONE CONDITION
+Token system complete. All pages use shared components. No hardcoded values.

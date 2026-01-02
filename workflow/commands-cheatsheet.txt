@@ -1,0 +1,72 @@
+================================================================================
+PROMPT WORKFLOW COMMANDS CHEATSHEET
+================================================================================
+
+--------------------------------------------------------------------------------
+/status
+--------------------------------------------------------------------------------
+Shows progress overview.
+
+Example output:
+  Completed: 3/29 (10%)
+  - done/auth-data-safety-prompt.txt
+  - done/data-consistency-prompt.txt
+  - done/invariant-prompt.txt
+
+  Remaining: 26
+  - done/analysis-prompt.txt
+  - done/blast-radius-prompt.txt
+  - ...
+
+--------------------------------------------------------------------------------
+/next
+--------------------------------------------------------------------------------
+Recommends the next prompt to run.
+
+Example output:
+  Next: done/analysis-prompt.txt
+  Reason: Next in run-order.txt Phase 2.
+
+--------------------------------------------------------------------------------
+/run <prompt-path>
+--------------------------------------------------------------------------------
+Executes exactly one prompt.
+
+Example:
+  /run done/analysis-prompt.txt
+
+Output:
+  [executes prompt instructions]
+  ---
+  Execution complete.
+  To record progress, issue: /complete done/analysis-prompt.txt
+
+--------------------------------------------------------------------------------
+/complete <prompt-path>
+--------------------------------------------------------------------------------
+Marks prompt as done and outputs updated state.
+
+Example:
+  /complete done/analysis-prompt.txt
+
+Output:
+  {
+    "completed": [
+      "done/auth-data-safety-prompt.txt",
+      "done/data-consistency-prompt.txt",
+      "done/invariant-prompt.txt",
+      "done/analysis-prompt.txt"
+    ]
+  }
+
+  Save this JSON to workflow/prompt-progress.json to persist.
+
+================================================================================
+QUICK WORKFLOW
+================================================================================
+
+1. /status          <- see where you are
+2. /next            <- get recommendation
+3. /run <path>      <- execute one prompt
+4. /complete <path> <- record completion
+5. Repeat
