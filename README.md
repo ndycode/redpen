@@ -14,7 +14,11 @@ npm install -g redpen
 redpen init
 ```
 
-Select platform (web or mobile). Auto-detects Flutter (pubspec.yaml) and React Native.
+### Platform Selection
+- **Web**: frontend (nextjs/react/vue) + backend (supabase/firebase/prisma)
+- **Mobile**: framework (flutter/react-native/native)
+
+Auto-detects Flutter (pubspec.yaml) and React Native.
 
 ## Commands
 
@@ -50,19 +54,13 @@ redpen copy 3       # copy prompt #3
 ### Tag Filtering
 ```bash
 redpen order security    # show only security prompts
-redpen check security    # CI check only security
 ```
 
 ### Custom Prompts
-Add project-specific prompts to `.redpen/` folder in your project root.
+Add project-specific prompts to `.redpen/` folder.
 
 ### Branch Progress
-Progress tracked separately per git branch: `.redpen-progress-{branch}.json`
-
-### Color Output
-- 🟢 Green = completed
-- 🟡 Yellow = next up
-- ⚪ Dim = pending
+Progress tracked per git branch.
 
 ### Shell Completion
 ```bash
@@ -83,11 +81,15 @@ eval "$(redpen completion)"
 - `core/process/*` — documentation
 
 ### Web Platform
-- `web/frontend/*` — Next.js, React, Vue
+- `web/frontend/{nextjs,react,vue}/*`
 - `web/interface/*` — design system, accessibility
+- `web/backend/{supabase,firebase,prisma}/*`
 
 ### Mobile Platform
-- `mobile/*` — Flutter/mobile-specific
+- `mobile/core/*` — shared mobile prompts (always loaded)
+- `mobile/flutter/*` — Flutter-specific
+- `mobile/react-native/*` — React Native-specific
+- `mobile/native/*` — iOS/Android native
 
 ## Philosophy
 
