@@ -7,35 +7,35 @@ const PROMPTS_DIR = path.join(__dirname, '..', 'prompts');
 const PROGRESS_FILE = path.join(process.cwd(), '.redpen-progress.json');
 
 const RUN_ORDER = [
-    'safety/analysis-prompt.txt',
-    'safety/auth-data-safety-prompt.txt',
-    'safety/data-consistency-prompt.txt',
-    'safety/invariant-prompt.txt',
-    'safety/blast-radius-prompt.txt',
-    'safety/human-error-prompt.txt',
-    'framework/nextjs-rendering-prompt.txt',
-    'framework/operability-prompt.txt',
-    'framework/optimization-prompt.txt',
-    'testing/test-generation-prompt.txt',
-    'ui/design-tokens-enforcement-prompt.txt',
-    'ui/ui-components-audit-prompt.txt',
-    'ui/ui-consistency-audit-prompt.txt',
-    'ui/ui-accessibility-prompt.txt',
-    'ui/ui-performance-prompt.txt',
-    'content/product-copy-voice-guide-prompt.txt',
-    'marketing/content-density-and-editorial-quality-prompt.txt',
-    'ui/mobile/mobile-responsive-layout-audit-prompt.txt',
-    'ui/mobile/mobile-navigation-and-thumb-reach-prompt.txt',
-    'ui/mobile/mobile-a11y-touch-audit-prompt.txt',
-    'ui/mobile/mobile-forms-inputs-prompt.txt',
-    'ui/mobile/mobile-performance-and-hydration-prompt.txt',
-    'ui/mobile/mobile-visual-density-and-readability-prompt.txt',
-    'ui/error-boundary-and-fallback-ux-prompt.txt',
-    'ui/ui-redesign-prompt.txt',
-    'ui/ui-anti-ai-slop-redesign-prompt.txt',
-    'marketing/nextjs-marketing-page-de-templatization-prompt.txt',
-    'docs/docs-sync-and-accuracy-prompt.txt',
-    'engineering/dx-workflow-and-pr-review-prompt.txt'
+    'security/code-analysis.txt',
+    'security/authorization-boundaries.txt',
+    'security/data-integrity.txt',
+    'security/state-invariants.txt',
+    'security/impact-analysis.txt',
+    'security/api-ergonomics.txt',
+    'architecture/render-performance.txt',
+    'architecture/operational-health.txt',
+    'architecture/system-optimization.txt',
+    'quality/behavioral-coverage.txt',
+    'interface/design-system.txt',
+    'interface/component-architecture.txt',
+    'interface/visual-consistency.txt',
+    'interface/accessibility-core.txt',
+    'interface/rendering-performance.txt',
+    'product/voice-tone.txt',
+    'growth/editorial-standards.txt',
+    'interface/mobile/responsive-layout.txt',
+    'interface/mobile/ergonomic-reach.txt',
+    'interface/mobile/touch-targets.txt',
+    'interface/mobile/input-interaction.txt',
+    'interface/mobile/mobile-performance.txt',
+    'interface/mobile/information-density.txt',
+    'interface/resilience-ux.txt',
+    'interface/visual-refactoring.txt',
+    'interface/quality-standards.txt',
+    'growth/conversion-layout.txt',
+    'process/documentation-integrity.txt',
+    'process/code-review-standards.txt'
 ];
 
 function getProgress() {
@@ -97,7 +97,7 @@ function copyPrompt(promptFile) {
 
 function showOrder() {
     console.log('\n📋 REDPEN Canonical Run Order\n');
-    console.log('System Safety → Framework → Tests → UI → Content → Mobile → Failure → Marketing → Hygiene\n');
+    console.log('Security → Architecture → Quality → Interface → Product → Growth → Process\n');
 
     const progress = getProgress();
 
