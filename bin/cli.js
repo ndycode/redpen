@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PROMPTS_DIR = path.join(__dirname, '..');
-const PROGRESS_FILE = path.join(process.cwd(), '.shipkit-progress.json');
+const PROGRESS_FILE = path.join(process.cwd(), '.redpen-progress.json');
 
 const RUN_ORDER = [
     'analysis-prompt.txt',
@@ -96,7 +96,7 @@ function copyPrompt(promptFile) {
 }
 
 function showOrder() {
-    console.log('\n📋 SHIPKIT Canonical Run Order\n');
+    console.log('\n📋 REDPEN Canonical Run Order\n');
     console.log('System Safety → Framework → Tests → UI → Content → Mobile → Failure → Marketing → Hygiene\n');
 
     const progress = getProgress();
@@ -120,8 +120,8 @@ function showNext() {
 
     const index = RUN_ORDER.indexOf(next) + 1;
     console.log(`\n📍 Next: [${index}/${RUN_ORDER.length}] ${next}\n`);
-    console.log('Run: shipkit show ' + getPromptName(next));
-    console.log('Or:  shipkit copy ' + getPromptName(next));
+    console.log('Run: redpen show ' + getPromptName(next));
+    console.log('Or:  redpen copy ' + getPromptName(next));
 }
 
 function markDone(promptFile) {
@@ -140,7 +140,7 @@ function showStatus() {
     const done = progress.completed.length;
     const pct = Math.round((done / total) * 100);
 
-    console.log(`\n📊 SHIPKIT Status\n`);
+    console.log(`\n📊 REDPEN Status\n`);
     console.log(`Progress: ${done}/${total} (${pct}%)`);
     console.log(`${'█'.repeat(Math.round(pct / 5))}${'░'.repeat(20 - Math.round(pct / 5))}`);
 
@@ -159,10 +159,10 @@ function showList() {
 
 function showHelp() {
     console.log(`
-shipkit - Senior engineer review system in a box
+redpen - Senior engineer review system in a box
 
 USAGE
-  shipkit <command> [options]
+  redpen <command> [options]
 
 COMMANDS
   order          Show canonical run order with progress
@@ -177,21 +177,21 @@ COMMANDS
   reset          Reset all progress
 
 EXAMPLES
-  shipkit order
-  shipkit show auth-data-safety
-  shipkit copy ui/design-tokens-enforcement
-  shipkit done analysis
+  redpen order
+  redpen show auth-data-safety
+  redpen copy ui/design-tokens-enforcement
+  redpen done analysis
 
 WORKFLOW
-  1. Run 'shipkit next' to see the next prompt
-  2. Run 'shipkit copy <name>' to copy it
+  1. Run 'redpen next' to see the next prompt
+  2. Run 'redpen copy <name>' to copy it
   3. Paste into Claude/ChatGPT/Cursor
   4. Address CRITICAL and HIGH findings
-  5. Run 'shipkit done <name>' to mark complete
+  5. Run 'redpen done <name>' to mark complete
   6. Repeat until all prompts pass
 
 MORE INFO
-  https://github.com/yourusername/shipkit
+  https://github.com/ndycode/redpen
 `);
 }
 
@@ -222,7 +222,7 @@ switch (command) {
         break;
     case 'show':
         if (!arg) {
-            console.error('Usage: shipkit show <prompt-name>');
+            console.error('Usage: redpen show <prompt-name>');
             process.exit(1);
         }
         const showFile = findPromptFile(arg);
@@ -234,7 +234,7 @@ switch (command) {
         break;
     case 'copy':
         if (!arg) {
-            console.error('Usage: shipkit copy <prompt-name>');
+            console.error('Usage: redpen copy <prompt-name>');
             process.exit(1);
         }
         const copyFile = findPromptFile(arg);
@@ -246,7 +246,7 @@ switch (command) {
         break;
     case 'done':
         if (!arg) {
-            console.error('Usage: shipkit done <prompt-name>');
+            console.error('Usage: redpen done <prompt-name>');
             process.exit(1);
         }
         const doneFile = findPromptFile(arg);

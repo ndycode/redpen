@@ -11,7 +11,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/yourusername/shipkit.git"
+        "url": "git+https://github.com/ndycode/redpen.git"
     },
     "keywords": [
         "code-review",
@@ -28,9 +28,9 @@
     "author": "",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/yourusername/shipkit/issues"
+        "url": "https://github.com/ndycode/redpen/issues"
     },
-    "homepage": "https://github.com/yourusername/shipkit#readme",
+    "homepage": "https://github.com/ndycode/redpen#readme",
     "files": [
         "bin/",
         "*.txt",

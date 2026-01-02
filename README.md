@@ -1,25 +1,25 @@
-# shipkit
+# redpen
 
 > A senior engineer review system in a box. Production-grade prompts for auditing AI-assisted codebases.
 
-[![npm version](https://badge.fury.io/js/shipkit.svg)](https://www.npmjs.com/package/shipkit)
+[![npm version](https://badge.fury.io/js/redpen.svg)](https://www.npmjs.com/package/redpen)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## What is shipkit?
+## What is redpen?
 
-**shipkit** is a structured prompt library designed to catch what vibecoding misses.
+**redpen** is a structured prompt library designed to catch what vibecoding misses.
 
-When you build fast with AI (Cursor, Copilot, Claude), you're optimizing for speed. shipkit is the review layer that catches auth gaps, data corruption risks, caching bugs, and UX failures before they hit production.
+When you build fast with AI (Cursor, Copilot, Claude), you're optimizing for speed. redpen is the review layer that catches auth gaps, data corruption risks, caching bugs, and UX failures before they hit production.
 
 It's how Stripe, Notion, and Vercel-tier teams review code — packaged as prompts you can run with any AI.
 
 ---
 
-## Why shipkit?
+## Why redpen?
 
-| Without shipkit | With shipkit |
+| Without redpen | With redpen |
 |-----------------|--------------|
 | "It works on my machine" | Verified safe to ship |
 | Silent data leaks | RLS + auth audited |
@@ -35,14 +35,14 @@ It's how Stripe, Notion, and Vercel-tier teams review code — packaged as promp
 ### npm (recommended)
 
 ```bash
-npm install -g shipkit
+npm install -g redpen
 ```
 
 ### Manual
 
 ```bash
-git clone https://github.com/yourusername/shipkit.git
-cd shipkit
+git clone https://github.com/ndycode/redpen.git
+cd redpen
 ```
 
 ---
@@ -53,29 +53,29 @@ cd shipkit
 
 ```bash
 # Copy prompt content, paste into your AI (Claude, ChatGPT, Cursor)
-shipkit show auth-data-safety
+redpen show auth-data-safety
 
 # Or output to clipboard
-shipkit copy auth-data-safety
+redpen copy auth-data-safety
 ```
 
 ### 2. Run the full review sequence
 
 ```bash
 # See the canonical order
-shipkit order
+redpen order
 
 # Get next prompt in sequence
-shipkit next
+redpen next
 
 # Mark prompt complete
-shipkit done auth-data-safety
+redpen done auth-data-safety
 ```
 
 ### 3. Check progress
 
 ```bash
-shipkit status
+redpen status
 ```
 
 ---
@@ -165,7 +165,7 @@ System Safety → Framework → Tests → UI → Content → Mobile → Failure 
 
 ### Claude / ChatGPT
 
-1. Run `shipkit copy <prompt-name>`
+1. Run `redpen copy <prompt-name>`
 2. Paste into chat
 3. Follow the prompt's output format
 4. Address CRITICAL and HIGH findings before shipping
@@ -187,7 +187,7 @@ For best results, provide:
 
 ## Configuration
 
-Create `.shipkitrc` in your project root:
+Create `.redpenrc` in your project root:
 
 ```json
 {
@@ -229,7 +229,7 @@ Required fix: <specific action>
 
 ## Philosophy
 
-shipkit is built on these principles:
+redpen is built on these principles:
 
 1. **System safety before UI polish** — Don't decorate a broken system
 2. **Enforcement, not explanation** — Prompts catch bugs, not teach theory

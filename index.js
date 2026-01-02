@@ -1,5 +1,5 @@
 /**
- * shipkit - Senior engineer review system in a box
+ * redpen - Senior engineer review system in a box
  * 
  * Production-grade prompts for auditing AI-assisted codebases.
  */

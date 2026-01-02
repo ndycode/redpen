@@ -2,7 +2,7 @@
 node_modules/
 
 # Progress files (user-specific)
-.shipkit-progress.json
+.redpen-progress.json
 
 # OS files
 .DS_Store
