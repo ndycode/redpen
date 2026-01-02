@@ -85,8 +85,11 @@ function buildRunOrder(config) {
     });
 
     if (config.platform === 'mobile') {
-        // Mobile platform - scan all prompts/mobile/ recursively
-        scanDirRecursive(path.join(PROMPTS_DIR, 'mobile')).forEach(f => prompts.push(f));
+        // Mobile platform - core always, then framework-specific
+        scanDirRecursive(path.join(PROMPTS_DIR, 'mobile', 'core')).forEach(f => prompts.push(f));
+        if (config.framework && config.framework !== 'none') {
+            scanDirRecursive(path.join(PROMPTS_DIR, 'mobile', config.framework)).forEach(f => prompts.push(f));
+        }
     } else {
         // Web platform (default)
         if (config.frontend && config.frontend !== 'none') {
@@ -590,6 +593,17 @@ async function init() {
             }
         ]);
         config = { ...config, ...webAnswers };
+    } else {
+        const mobileAnswers = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'framework',
+                message: 'framework',
+                default: 'flutter',
+                choices: ['flutter', 'react-native', 'native', 'none']
+            }
+        ]);
+        config = { ...config, ...mobileAnswers };
     }
 
     saveConfig(config);

@@ -1,6 +1,6 @@
 {
     "name": "redpen",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "description": "Production-grade audit prompts for AI-assisted codebases. Modular stack support, interactive picker, numeric shortcuts.",
     "main": "index.js",
     "bin": {
