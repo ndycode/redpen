@@ -25,6 +25,10 @@ redpen operates as an external audit layer. It does not auto-correct; it validat
    ```bash
    redpen copy security/authorization-boundaries
    ```
+   Or use the **interactive picker** (no argument needed):
+   ```bash
+   redpen copy
+   ```
 
 3. **Execute Audit**
    Paste the criteria into your AI environment (Cursor, Claude, Windsurf) to enforce the standard against your current diff.

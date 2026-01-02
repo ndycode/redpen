@@ -65,10 +65,58 @@ function findPromptFile(name) {
     return null;
 }
 
+async function interactiveSelect(action) {
+    const { default: inquirer } = await import('inquirer');
+    const Separator = inquirer.Separator;
+    const progress = getProgress();
+
+    // Group prompts by category
+    const categories = {};
+    RUN_ORDER.forEach((prompt, index) => {
+        const category = prompt.split('/')[0].toUpperCase();
+        if (!categories[category]) categories[category] = [];
+        categories[category].push({ prompt, index });
+    });
+
+    // Build choices with category headers
+    const choices = [];
+    const categoryOrder = ['SECURITY', 'ARCHITECTURE', 'QUALITY', 'INTERFACE', 'PRODUCT', 'GROWTH', 'PROCESS'];
+
+    categoryOrder.forEach(category => {
+        if (categories[category]) {
+            choices.push(new Separator(`\n── ${category} ──────────────────────`));
+            categories[category].forEach(({ prompt, index }) => {
+                const done = progress.completed.includes(prompt);
+                const status = done ? '✓' : '○';
+                const name = prompt.replace('.txt', '');
+                choices.push({
+                    name: `  ${status} ${String(index + 1).padStart(2)}. ${name}`,
+                    value: prompt,
+                    short: name
+                });
+            });
+        }
+    });
+
+    const { selected } = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'selected',
+            message: `Select a prompt to ${action}:`,
+            choices,
+            loop: false,
+            pageSize: 20
+        }
+    ]);
+
+    return selected;
+}
+
+
 function showPrompt(promptFile) {
     const fullPath = path.join(PROMPTS_DIR, promptFile);
     if (!fs.existsSync(fullPath)) {
-        console.error(`Prompt not found: ${promptFile}`);
+        console.error(`not found: ${promptFile}`);
         process.exit(1);
     }
     console.log(fs.readFileSync(fullPath, 'utf-8'));
@@ -77,34 +125,36 @@ function showPrompt(promptFile) {
 function copyPrompt(promptFile) {
     const fullPath = path.join(PROMPTS_DIR, promptFile);
     if (!fs.existsSync(fullPath)) {
-        console.error(`Prompt not found: ${promptFile}`);
+        console.error(`not found: ${promptFile}`);
         process.exit(1);
     }
     const content = fs.readFileSync(fullPath, 'utf-8');
 
-    // Try to copy to clipboard
     try {
         require('child_process').execSync(
             process.platform === 'win32' ? 'clip' : 'pbcopy',
             { input: content }
         );
-        console.log(`✓ Copied ${promptFile} to clipboard`);
+        console.log(`copied: ${promptFile}`);
     } catch {
-        console.log('Could not copy to clipboard. Content:');
         console.log(content);
     }
 }
 
 function showOrder() {
-    console.log('\n📋 REDPEN Canonical Run Order\n');
-    console.log('Security → Architecture → Quality → Interface → Product → Growth → Process\n');
-
     const progress = getProgress();
+    let currentCategory = '';
 
     RUN_ORDER.forEach((prompt, i) => {
+        const category = prompt.split('/')[0];
+        if (category !== currentCategory) {
+            currentCategory = category;
+            console.log(`\n${category.toUpperCase()}`);
+        }
         const done = progress.completed.includes(prompt);
-        const status = done ? '✓' : ' ';
-        console.log(`[${status}] ${String(i + 1).padStart(2)}. ${prompt}`);
+        const mark = done ? 'x' : ' ';
+        const name = prompt.replace('.txt', '');
+        console.log(`  [${mark}] ${String(i + 1).padStart(2)}  ${name}`);
     });
     console.log('');
 }
@@ -114,14 +164,13 @@ function showNext() {
     const next = RUN_ORDER.find(p => !progress.completed.includes(p));
 
     if (!next) {
-        console.log('✓ All prompts completed!');
+        console.log('done');
         return;
     }
 
     const index = RUN_ORDER.indexOf(next) + 1;
-    console.log(`\n📍 Next: [${index}/${RUN_ORDER.length}] ${next}\n`);
-    console.log('Run: redpen show ' + getPromptName(next));
-    console.log('Or:  redpen copy ' + getPromptName(next));
+    const name = next.replace('.txt', '');
+    console.log(`${index}/${RUN_ORDER.length}  ${name}`);
 }
 
 function markDone(promptFile) {
@@ -130,68 +179,56 @@ function markDone(promptFile) {
         progress.completed.push(promptFile);
         saveProgress(progress);
     }
-    console.log(`✓ Marked ${promptFile} as complete`);
-    showNext();
+    console.log(`done: ${promptFile.replace('.txt', '')}`);
+
+    const next = RUN_ORDER.find(p => !progress.completed.includes(p));
+    if (next) {
+        const index = RUN_ORDER.indexOf(next) + 1;
+        console.log(`next: ${index}/${RUN_ORDER.length}  ${next.replace('.txt', '')}`);
+    }
 }
 
 function showStatus() {
     const progress = getProgress();
     const total = RUN_ORDER.length;
     const done = progress.completed.length;
-    const pct = Math.round((done / total) * 100);
 
-    console.log(`\n📊 REDPEN Status\n`);
-    console.log(`Progress: ${done}/${total} (${pct}%)`);
-    console.log(`${'█'.repeat(Math.round(pct / 5))}${'░'.repeat(20 - Math.round(pct / 5))}`);
+    console.log(`${done}/${total}`);
 
     if (done < total) {
         showNext();
-    } else {
-        console.log('\n✓ All prompts completed! Ship it! 🚀\n');
     }
 }
 
 function showList() {
-    console.log('\n📚 Available Prompts\n');
-    RUN_ORDER.forEach(p => console.log(`  ${getPromptName(p)}`));
+    let currentCategory = '';
+    RUN_ORDER.forEach(p => {
+        const category = p.split('/')[0];
+        if (category !== currentCategory) {
+            currentCategory = category;
+            console.log(`\n${category}`);
+        }
+        console.log(`  ${p.replace('.txt', '')}`);
+    });
     console.log('');
 }
 
 function showHelp() {
     console.log(`
-redpen - Senior engineer review system in a box
+redpen <command> [name]
 
-USAGE
-  redpen <command> [options]
+  next           what to run
+  order          full sequence
+  status         progress
+  list           all prompts
 
-COMMANDS
-  order          Show canonical run order with progress
-  next           Show next prompt to run
-  status         Show overall progress
-  list           List all available prompts
-  
-  show <name>    Display prompt content
-  copy <name>    Copy prompt to clipboard
-  done <name>    Mark prompt as complete
-  
-  reset          Reset all progress
+  show [name]    print prompt
+  copy [name]    copy to clipboard
+  done [name]    mark complete
 
-EXAMPLES
-  redpen order
-  redpen show auth-data-safety
-  redpen copy ui/design-tokens-enforcement
-  redpen done analysis
+  reset          clear progress
 
-WORKFLOW
-  1. Run 'redpen next' to see the next prompt
-  2. Run 'redpen copy <name>' to copy it
-  3. Paste into Claude/ChatGPT/Cursor
-  4. Address CRITICAL and HIGH findings
-  5. Run 'redpen done <name>' to mark complete
-  6. Repeat until all prompts pass
-
-MORE INFO
-  https://github.com/ndycode/redpen
+Run without [name] for interactive selection.
 `);
 }
 
@@ -199,7 +236,7 @@ function reset() {
     if (fs.existsSync(PROGRESS_FILE)) {
         fs.unlinkSync(PROGRESS_FILE);
     }
-    console.log('✓ Progress reset');
+    console.log('reset');
 }
 
 // CLI Entry
@@ -207,66 +244,75 @@ const args = process.argv.slice(2);
 const command = args[0];
 const arg = args[1];
 
-switch (command) {
-    case 'order':
-        showOrder();
-        break;
-    case 'next':
-        showNext();
-        break;
-    case 'status':
-        showStatus();
-        break;
-    case 'list':
-        showList();
-        break;
-    case 'show':
-        if (!arg) {
-            console.error('Usage: redpen show <prompt-name>');
-            process.exit(1);
+(async () => {
+    switch (command) {
+        case 'order':
+            showOrder();
+            break;
+        case 'next':
+            showNext();
+            break;
+        case 'status':
+            showStatus();
+            break;
+        case 'list':
+            showList();
+            break;
+        case 'show': {
+            let showFile;
+            if (!arg) {
+                showFile = await interactiveSelect('show');
+            } else {
+                showFile = findPromptFile(arg);
+                if (!showFile) {
+                    console.error(`Prompt not found: ${arg}`);
+                    process.exit(1);
+                }
+            }
+            showPrompt(showFile);
+            break;
         }
-        const showFile = findPromptFile(arg);
-        if (!showFile) {
-            console.error(`Prompt not found: ${arg}`);
-            process.exit(1);
+        case 'copy': {
+            let copyFile;
+            if (!arg) {
+                copyFile = await interactiveSelect('copy');
+            } else {
+                copyFile = findPromptFile(arg);
+                if (!copyFile) {
+                    console.error(`Prompt not found: ${arg}`);
+                    process.exit(1);
+                }
+            }
+            copyPrompt(copyFile);
+            break;
         }
-        showPrompt(showFile);
-        break;
-    case 'copy':
-        if (!arg) {
-            console.error('Usage: redpen copy <prompt-name>');
-            process.exit(1);
+        case 'done': {
+            let doneFile;
+            if (!arg) {
+                doneFile = await interactiveSelect('mark as done');
+            } else {
+                doneFile = findPromptFile(arg);
+                if (!doneFile) {
+                    console.error(`Prompt not found: ${arg}`);
+                    process.exit(1);
+                }
+            }
+            markDone(doneFile);
+            break;
         }
-        const copyFile = findPromptFile(arg);
-        if (!copyFile) {
-            console.error(`Prompt not found: ${arg}`);
-            process.exit(1);
-        }
-        copyPrompt(copyFile);
-        break;
-    case 'done':
-        if (!arg) {
-            console.error('Usage: redpen done <prompt-name>');
-            process.exit(1);
-        }
-        const doneFile = findPromptFile(arg);
-        if (!doneFile) {
-            console.error(`Prompt not found: ${arg}`);
-            process.exit(1);
-        }
-        markDone(doneFile);
-        break;
-    case 'reset':
-        reset();
-        break;
-    case 'help':
-    case '--help':
-    case '-h':
-        showHelp();
-        break;
-    default:
-        if (command) {
-            console.error(`Unknown command: ${command}`);
-        }
-        showHelp();
-}
+        case 'reset':
+            reset();
+            break;
+        case 'help':
+        case '--help':
+        case '-h':
+            showHelp();
+            break;
+        default:
+            if (command) {
+                console.error(`Unknown command: ${command}`);
+            }
+            showHelp();
+    }
+})();
+
