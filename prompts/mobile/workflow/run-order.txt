@@ -1,0 +1,118 @@
+MOBILE PROMPT CANONICAL RUN ORDER
+==================================
+
+Order follows elite mobile team discipline:
+  correctness → performance → testing → UI → UX → failure → observability → health
+
+================================================================================
+PHASE 1: SYSTEM SAFETY & CORRECTNESS (Category A)
+================================================================================
+
+1.  analysis-prompt.txt
+2.  mobile-invariant-prompt.txt
+3.  mobile-data-consistency-prompt.txt
+4.  auth-session-safety-prompt.txt
+5.  mobile-blast-radius-prompt.txt
+6.  mobile-human-error-prompt.txt
+7.  mobile-dependency-risk-prompt.txt
+
+================================================================================
+PHASE 2: PLATFORM & PERFORMANCE (Category B)
+================================================================================
+
+8.  optimization-prompt.txt
+9.  ui/mobile-ui-performance-prompt.txt
+
+================================================================================
+PHASE 3: TESTING & RELEASE GATES (Category C)
+================================================================================
+
+10. test-generation-prompt.txt
+11. mobile-release-ci-prompt.txt
+
+================================================================================
+PHASE 4: UI SYSTEM & DESIGN DISCIPLINE (Category D)
+================================================================================
+
+12. ui/mobile-design-tokens-enforcement-prompt.txt
+13. ui/mobile-ui-components-audit-prompt.txt
+14. ui/mobile-ui-consistency-audit-prompt.txt
+15. ui/mobile-ui-accessibility-prompt.txt
+16. ui/mobile-ui-redesign-prompt.txt
+
+================================================================================
+PHASE 5: UX FLOW & CONTENT (Category E)
+================================================================================
+
+17. ui/mobile-ux-flow-friction-prompt.txt
+18. ui/ui-anti-ai-slop-redesign-prompt.txt
+
+================================================================================
+PHASE 6: FAILURE STATES & RECOVERY (Category F)
+================================================================================
+
+19. ui/mobile-error-recovery-prompt.txt
+
+================================================================================
+PHASE 7: OBSERVABILITY & OPERABILITY (Category G)
+================================================================================
+
+20. mobile-operability-prompt.txt
+21. ui/mobile-observability-signal-quality-prompt.txt
+22. mobile-security-privacy-prompt.txt
+
+================================================================================
+PHASE 8: LONG-TERM HEALTH (Category H)
+================================================================================
+
+23. ui/mobile-long-term-maintainability-prompt.txt
+
+================================================================================
+RULES (ENFORCED)
+================================================================================
+
+- NEVER run UI (Phase 4) before system safety (Phase 1)
+- NEVER tune UX (Phase 5) before performance (Phase 2)
+- NEVER finalize failure UX (Phase 6) before flows stable (Phase 5)
+- Long-term health (Phase 8) ALWAYS runs last
+- Phases 1-3 are mandatory before any release
+- Phases 4-6 run during active feature development
+- Phases 7-8 run periodically (monthly or quarterly)
+
+================================================================================
+CLASSIFICATION TABLE
+================================================================================
+
+PATH                                          | CAT | LIFECYCLE | FREQUENCY
+----------------------------------------------|-----|-----------|------------
+analysis-prompt.txt                           | A   | ACTIVE    | Per major change
+mobile-invariant-prompt.txt                   | A   | ACTIVE    | Per major change
+mobile-data-consistency-prompt.txt            | A   | ACTIVE    | Per major change
+auth-session-safety-prompt.txt                | A   | ACTIVE    | Per auth change
+mobile-blast-radius-prompt.txt                | A   | ACTIVE    | Pre-refactor
+mobile-human-error-prompt.txt                 | A   | ACTIVE    | Per API change
+mobile-dependency-risk-prompt.txt             | A   | ACTIVE    | Quarterly
+optimization-prompt.txt                       | B   | ACTIVE    | Per perf concern
+ui/mobile-ui-performance-prompt.txt           | B   | ACTIVE    | Per UI change
+test-generation-prompt.txt                    | C   | ACTIVE    | Post-audit
+mobile-release-ci-prompt.txt                  | C   | ACTIVE    | Pre-release
+ui/mobile-design-tokens-enforcement-prompt.txt| D   | ACTIVE    | Per UI change
+ui/mobile-ui-components-audit-prompt.txt      | D   | ACTIVE    | Monthly
+ui/mobile-ui-consistency-audit-prompt.txt     | D   | ACTIVE    | Monthly
+ui/mobile-ui-accessibility-prompt.txt         | D   | ACTIVE    | Per UI change
+ui/mobile-ui-redesign-prompt.txt              | D   | ACTIVE    | Major redesign
+ui/mobile-ux-flow-friction-prompt.txt         | E   | ACTIVE    | Per flow change
+ui/ui-anti-ai-slop-redesign-prompt.txt        | E   | ACTIVE    | Major redesign
+ui/mobile-error-recovery-prompt.txt           | F   | ACTIVE    | Per error path
+mobile-operability-prompt.txt                 | G   | ACTIVE    | Quarterly
+ui/mobile-observability-signal-quality-prompt.txt | G | ACTIVE | Quarterly
+mobile-security-privacy-prompt.txt            | G   | ACTIVE    | Per data change
+ui/mobile-long-term-maintainability-prompt.txt| H   | ACTIVE    | Quarterly
+
+================================================================================
+NOTES
+================================================================================
+
+- All 23 prompts are ACTIVE (no /done directory exists)
+- No prompt appears in multiple categories
+- security-privacy moved to G (observability) since auth is in A

@@ -1,0 +1,167 @@
+ROLE
+Principal Mobile Engineer and Design Systems Architect (20+ years). Removing all "AI-generated" visual, layout, and copy patterns.
+
+INTENT
+Redesign ALL screens so the app feels human-designed, editorially intentional, and comparable to top-tier consumer apps — not AI-generated templates or generic UI kits.
+
+NOTE: This is a Category C (workflow) prompt. It is procedural, not analytical.
+
+SCOPE
+Covers:
+- Identifying and removing AI-slop patterns (layout + copy)
+- Removing low-information UI sections
+- Defining tokens and shared components
+- Redesigning screens with intentional hierarchy
+- Rewriting on-screen copy to be concrete and human
+
+Does NOT cover:
+- Current state analysis (run UI audit prompts first)
+- General redesign without anti-slop focus (→ mobile-ui-redesign-prompt)
+
+ANTI-AI-SLOP DIRECTIVE (NON-NEGOTIABLE)
+
+You MUST actively remove:
+- Generic template layouts
+- "Card grid everywhere" designs with no hierarchy
+- Symmetrical sections that look auto-generated
+- Overly dense screens trying to fill space
+- Repeated UI blocks with minor variations
+- Vague, motivational, or marketing-fluff copy
+- Generic headings: "Welcome back", "Unlock your potential", "Everything you need in one place"
+- Filler text that does not add concrete information
+
+If a screen looks like it could have been generated in one prompt, it is unacceptable.
+
+REFERENCE QUALITY BAR
+
+The redesign MUST feel closer to:
+- High-quality consumer apps with strong taste
+- Clean editorial hierarchy and intentional spacing
+- Confident UI that does not rely on gimmicks
+- Interfaces that are calm, readable, and purposeful
+
+Do NOT emulate:
+- AI website/app generators
+- Generic Flutter UI templates
+- Over-boxed "dashboard" screens
+- Overuse of shadows, gradients, and noisy backgrounds
+- Empty "pretty" sections that communicate nothing
+
+EXECUTION ORDER (LOCKED)
+1. Identify AI-slop patterns (layout + copy)
+2. Remove low-information UI sections
+3. Define tokens and shared components
+4. Redesign screens with intentional hierarchy and calm spacing
+5. Rewrite all on-screen copy to be concrete and human
+6. Verify no hardcoded values remain
+
+Do NOT add visual flourish before fixing structure and copy.
+
+DESIGN SYSTEM REQUIREMENTS (CRITICAL)
+
+You MUST use global design tokens.
+DO NOT hardcode: spacing values, font sizes/weights, colors, radii, elevations, icon sizes.
+
+Tokens MUST exist and be referenced via ThemeData / extensions / centralized constants:
+- Spacing scale (xs, sm, md, lg, xl…)
+- Typography scale (display, title, body, caption)
+- Color palette (bg, surface, primary, secondary, error, text variants)
+- Radius scale
+- Elevation/shadow scale
+- Button variants and sizes
+- Card variants
+- Icon sizing scale
+
+SCREEN REDESIGN REQUIREMENTS
+
+For EVERY screen:
+
+Preserve functional intent:
+- Same data
+- Same actions
+- Same navigation outcomes
+
+Replace template structure with intentional hierarchy:
+- Identify the primary user goal on that screen
+- Make the primary content obvious
+- Demote secondary content
+- Remove redundant sections
+
+Use calm, deliberate spacing:
+- Less clutter
+- Fewer boxes
+- Use whitespace as structure
+- Stop using cards as the only organizational tool
+
+Improve interaction patterns:
+- Predictable action placement
+- Strong primary/secondary button hierarchy
+- Consistent form patterns and validation UI
+
+If content blocks can be rearranged without changing meaning, the layout is generic and must be redesigned.
+
+TYPOGRAPHY & COPY QUALITY (CRITICAL)
+
+You MUST rewrite UI text to:
+- Be concrete, not abstract
+- Be short, not fluffy
+- Avoid buzzwords and motivational filler
+- Sound written by a human who understands the product
+
+Rules:
+- No marketing tone inside product screens
+- No "AI-sounding" phrases
+- No repeating the same idea in different words
+- Remove text that conveys no new information
+
+Every label and description must earn its space.
+
+LAYOUT & COMPOSITION RULES (MOBILE-SPECIFIC)
+- Avoid uniform stacking of identical cards
+- Use sections with clear titles only when needed
+- Prefer fewer, stronger UI elements per screen
+- Ensure information density matches mobile usage (quick scanning)
+- Use consistent safe areas, padding, and rhythm across screens
+- Avoid decorative noise (unnecessary gradients, shadows, shapes)
+
+A good mobile screen feels calm and obvious.
+
+STATE DESIGN (MUST BE HUMAN-QUALITY)
+
+For every screen:
+- Empty states are informative and specific
+- Loading states do not jump layout unnecessarily
+- Error states are actionable and calm
+- Success feedback is clear and not childish
+
+Avoid generic empty-state text like "No data yet."
+
+FLUTTER IMPLEMENTATION RULES
+- Define tokens first (ThemeData + extensions)
+- Create reusable components before redesigning screens
+- No per-screen one-off styling
+- Keep widget trees readable and maintainable
+
+OUTPUT REQUIREMENTS (STRICT)
+
+Do not narrate.
+
+Output ONLY:
+1. Screens with AI-slop issues identified
+2. Layout patterns removed or replaced
+3. Sections removed entirely (with reason)
+4. Screens redesigned (intent explained briefly)
+5. Copy rewritten (before → after for key screens)
+6. Files changed/created (paths)
+7. Any compromises requiring product decisions
+
+If any screen remains generic, state exactly why.
+
+DONE CONDITION
+Redesign is complete when:
+- The app feels authored, not generated
+- The UI avoids generic template patterns
+- Hierarchy is calm and confident
+- Global design tokens are used everywhere
+- Copy is concise and specific
+- The app feels comparable to top consumer mobile apps

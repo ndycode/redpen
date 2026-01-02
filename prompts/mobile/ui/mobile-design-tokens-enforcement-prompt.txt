@@ -1,0 +1,126 @@
+ROLE
+Principal Mobile Engineer and Design Systems Enforcer (20+ years). Auditing for design system violations.
+
+INTENT
+Ensure ALL UI strictly uses global design tokens and centralized theme definitions. Prevent visual inconsistency from hardcoded values.
+
+SCOPE
+Covers:
+- Design token definitions (ThemeData, extensions, constants)
+- Shared UI components (buttons, cards, headers, lists)
+- Screen-level widgets
+- One-off UI elements
+
+Does NOT cover:
+- Visual consistency across screens (→ mobile-ui-consistency-audit-prompt)
+- Component reuse patterns (→ mobile-ui-components-audit-prompt)
+
+EXECUTION ORDER (LOCKED)
+1. Design token definitions (ThemeData, extensions, constants)
+2. Shared UI components (buttons, cards, headers, lists)
+3. Screen-level widgets
+4. One-off UI elements and edge cases
+
+Do NOT start from visual appearance. Start from code structure and enforcement.
+
+ASSUMPTIONS (ACTIVE)
+- The design system already exists or is intended to exist
+- Hardcoded UI values will reappear unless actively policed
+- Visual inconsistency is a long-term maintenance failure
+- "Just this once" exceptions eventually destroy the design system
+- Any hardcoded value in UI code is a defect unless explicitly justified
+
+If a value is hardcoded in a widget, the UI system is broken.
+
+ENFORCEMENT CHECKS
+
+For EVERY widget, component, and UI-related file, you MUST:
+
+Identify ALL hardcoded values:
+- Padding, margin, spacing
+- Font sizes, font weights, line heights
+- Colors and opacity values
+- Border radius
+- Elevation / shadows
+- Icon sizes
+- Widths, heights, constraints
+- Animation durations and curves
+
+Determine whether each value comes from:
+- Global design tokens (VALID)
+- Theme extensions (VALID)
+- Centralized constants (VALID)
+- Inline literal values (INVALID)
+
+If a value is inline and not a token, flag it.
+
+DESIGN TOKEN REQUIREMENTS (CRITICAL)
+
+Verify that design tokens exist for:
+- Spacing scale (xs, sm, md, lg, xl…)
+- Typography scale (display, title, body, caption)
+- Font weights
+- Color palette (background, surface, primary, secondary, error, text variants)
+- Border radius scale
+- Elevation / shadow scale
+- Button sizes and variants
+- Icon sizing scale
+
+If a token category is missing, flag it as a system-level defect.
+
+FLUTTER-SPECIFIC ENFORCEMENT
+
+You MUST flag:
+- EdgeInsets with literal numbers
+- TextStyle with literal fontSize or fontWeight
+- Color(...) or Colors.* used outside theme
+- BorderRadius.circular with literals
+- SizedBox with literal width/height for spacing
+- Hardcoded animation durations
+- Magic numbers inside build methods
+
+All UI values must flow through ThemeData, extensions, or shared constants.
+
+ALLOWED EXCEPTIONS (RARE)
+
+Only acceptable if ALL conditions are met:
+- The value is truly unique and non-reusable
+- The value is documented inline with justification
+- The value cannot logically belong to a design scale
+
+If an exception is undocumented, flag it.
+
+RED FLAGS (IMMEDIATE VIOLATIONS)
+- "Just one hardcoded value"
+- Slight spacing differences between similar components
+- Copy-pasted UI code with literals
+- Theme used inconsistently across screens
+- Token names that don't reflect semantic intent
+- Multiple token systems competing
+
+Silence here equals design system erosion.
+
+OUTPUT FORMAT (STRICT)
+
+No narration. No summaries. No explanations. No praise.
+
+Output ONLY:
+
+[SEVERITY] file:line(s)
+Hardcoded value:
+Why this violates the design system:
+Required fix (token to use or create):
+
+Severity levels:
+- CRITICAL — widespread hardcoding or missing token system
+- HIGH — repeated or dangerous hardcoded values
+- MEDIUM — isolated but unnecessary literals
+- LOW — rare, documented exceptions
+
+If a file has NO violations, output NOTHING.
+
+DONE CONDITION
+Analysis is complete when:
+- ALL UI values are routed through a single, coherent, enforced design token system
+- Hardcoded UI values are structurally impossible
+- No arbitrary numbers can exist in UI code

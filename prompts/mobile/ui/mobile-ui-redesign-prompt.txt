@@ -1,0 +1,141 @@
+ROLE
+Principal Mobile Engineer and Design Systems Architect (20+ years). Responsible for full UI redesign.
+
+INTENT
+Redesign ALL screens to be significantly more polished, consistent, and usable, using existing screens only as a functional blueprint — NOT as visual constraints.
+
+NOTE: This is a Category C (workflow) prompt. It is procedural, not analytical.
+
+SCOPE
+Covers:
+- Design system definition (tokens, theme, components)
+- All screens redesigned using design system
+- Layout normalization
+- Typography hierarchy
+- Accessibility and usability
+- Consistency validation
+
+Does NOT cover:
+- Current state analysis (run UI audit prompts first)
+- Performance optimization (→ mobile-ui-performance-prompt)
+
+CORE DESIGN DIRECTIVE (NON-NEGOTIABLE)
+- Existing screens define WHAT the app does, not HOW it should look
+- Redesign must feel modern, clean, and intentional
+- Visual consistency across all screens is mandatory
+- Design quality must be comparable to a production-ready consumer app
+- Do NOT invent new UX flows unless required to fix usability issues
+
+EXECUTION ORDER (LOCKED)
+1. Define design tokens and theme
+2. Define core reusable components
+3. Redesign screens using those components
+4. Remove visual inconsistencies
+5. Validate that no hardcoded design values remain
+
+Do NOT redesign screens before the design system exists.
+
+DESIGN SYSTEM REQUIREMENTS (CRITICAL)
+
+You MUST define and use a global design system.
+You MUST use design tokens — NO hardcoded values.
+
+Tokens MUST include:
+- Spacing scale (xs, sm, md, lg, xl…)
+- Typography scale (display, title, body, caption)
+- Font weights
+- Color palette (primary, secondary, surface, background, error, text variants)
+- Border radius scale
+- Elevation / shadow tokens
+- Button sizes and variants
+- Card styles
+- Icon sizes
+
+All UI must reference tokens via Theme, constants, or centralized style classes.
+
+REDESIGN REQUIREMENTS
+
+For EVERY screen:
+
+Preserve:
+- Screen purpose
+- Data shown
+- Actions available
+
+Improve:
+- Visual hierarchy
+- Readability
+- Tap targets
+- Spacing and alignment
+- Consistency with other screens
+
+Normalize layout patterns:
+- Card structure
+- Headers and section titles
+- Action placement
+- Empty states
+- Loading states
+- Error states
+
+All screens must look like they belong to the SAME app.
+
+LAYOUT & COMPONENT RULES
+- Prefer reusable components over per-screen widgets
+- Use consistent card layout everywhere
+- Use consistent hero/header pattern where appropriate
+- Buttons must follow strict hierarchy: Primary → Secondary → Tertiary
+- No arbitrary spacing
+- No inconsistent padding/margins
+- No one-off visual exceptions
+
+If a component exists, reuse it. If not, create it once and reuse everywhere.
+
+TYPOGRAPHY & VISUAL HIERARCHY
+
+Typography must clearly express:
+- Screen title
+- Section title
+- Primary content
+- Secondary content
+- Metadata
+
+Do NOT rely on color alone for hierarchy.
+Line height, font size, and weight must be tokenized.
+Text styles must be reused across screens.
+
+ACCESSIBILITY & USABILITY (REQUIRED)
+- Adequate contrast for all text
+- Minimum tap target sizes
+- Logical focus order
+- Readable layouts on small devices
+- Avoid dense or cluttered layouts
+
+Do not trade clarity for visual flair.
+
+FLUTTER-SPECIFIC RULES
+- Use ThemeData and extensions for tokens
+- Avoid magic numbers in widgets
+- Extract shared widgets (Card, Button, Section, Header, ListItem)
+- Avoid deeply nested layout trees
+- Layout code must remain readable and maintainable
+
+OUTPUT REQUIREMENTS (STRICT)
+
+Do not narrate.
+
+Output ONLY:
+1. Design system summary (tokens defined and where)
+2. List of reusable components created or modified
+3. List of screens redesigned
+4. Files changed or created (paths)
+5. Any violations or compromises that could not be resolved
+
+If a screen cannot be redesigned cleanly without functional changes, flag it.
+
+DONE CONDITION
+Redesign is complete when:
+- The app uses a single, coherent design language
+- All UI values flow through global design tokens
+- All screens look cohesive
+- The UI is easy to maintain and extend
+- New features can scale without redesign

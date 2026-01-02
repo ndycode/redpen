@@ -1,7 +1,7 @@
 {
     "name": "redpen",
-    "version": "1.0.6",
-    "description": "A senior engineer review system in a box. Production-grade prompts for auditing AI-assisted codebases.",
+    "version": "1.4.0",
+    "description": "Production-grade audit prompts for AI-assisted codebases. Modular stack support, interactive picker, numeric shortcuts.",
     "main": "index.js",
     "bin": {
         "redpen": "./bin/cli.js"

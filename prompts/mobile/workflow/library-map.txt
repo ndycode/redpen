@@ -1,0 +1,159 @@
+PROMPT LIBRARY MAP
+==================
+
+Category Legend:
+  A = System Safety & Correctness
+  B = Platform & Performance
+  C = Testing & Release Gates
+  D = UI System & Design Discipline
+  E = UX Flow & Content
+  F = Failure States & Recovery
+  G = Observability & Operability
+  H = Long-Term Health
+
+================================================================================
+CATEGORY A: SYSTEM SAFETY & CORRECTNESS
+================================================================================
+
+analysis-prompt.txt
+  Purpose:    Master forensic audit across all mobile app layers
+  Lifecycle:  ACTIVE
+  Overlaps:   None (authoritative for full-stack analysis)
+
+auth-session-safety-prompt.txt
+  Purpose:    Token handling, refresh, session lifecycle correctness
+  Lifecycle:  ACTIVE
+  Overlaps:   mobile-security-privacy-prompt (auth vs data privacy)
+
+mobile-blast-radius-prompt.txt
+  Purpose:    Identify dangerous-to-change code with wide impact
+  Lifecycle:  ACTIVE
+  Overlaps:   ui/mobile-long-term-maintainability-prompt (change vs architecture)
+
+mobile-data-consistency-prompt.txt
+  Purpose:    Data sync, idempotency, local/server divergence
+  Lifecycle:  ACTIVE
+  Overlaps:   mobile-invariant-prompt (data flow vs business rules)
+
+mobile-dependency-risk-prompt.txt
+  Purpose:    Third-party dependency health, security, upgrade safety
+  Lifecycle:  ACTIVE
+  Overlaps:   None
+
+mobile-human-error-prompt.txt
+  Purpose:    API/service design foot-guns, misuse prevention
+  Lifecycle:  ACTIVE
+  Overlaps:   None
+
+mobile-invariant-prompt.txt
+  Purpose:    Business rule enforcement, state machine correctness
+  Lifecycle:  ACTIVE
+  Overlaps:   mobile-data-consistency-prompt (business rules vs data flow)
+
+================================================================================
+CATEGORY B: PLATFORM & PERFORMANCE
+================================================================================
+
+optimization-prompt.txt
+  Purpose:    System-level performance, optimization velocity
+  Lifecycle:  ACTIVE
+  Overlaps:   ui/mobile-ui-performance-prompt (system vs UI rendering)
+
+ui/mobile-ui-performance-prompt.txt
+  Purpose:    UI rendering efficiency, rebuild behavior
+  Lifecycle:  ACTIVE
+  Overlaps:   optimization-prompt (UI rendering vs system perf)
+
+================================================================================
+CATEGORY C: TESTING & RELEASE GATES
+================================================================================
+
+test-generation-prompt.txt
+  Purpose:    Generate comprehensive test suite
+  Lifecycle:  ACTIVE
+  Type:       Workflow (procedural)
+
+mobile-release-ci-prompt.txt
+  Purpose:    Build, signing, CI/CD, release-only failures
+  Lifecycle:  ACTIVE
+  Overlaps:   None
+
+================================================================================
+CATEGORY D: UI SYSTEM & DESIGN DISCIPLINE
+================================================================================
+
+ui/mobile-design-tokens-enforcement-prompt.txt
+  Purpose:    Enforce design token usage, eliminate hardcoded values
+  Lifecycle:  ACTIVE
+  Overlaps:   ui/mobile-ui-consistency-audit-prompt (tokens vs visual)
+
+ui/mobile-ui-components-audit-prompt.txt
+  Purpose:    Component reuse, duplication elimination
+  Lifecycle:  ACTIVE
+  Overlaps:   ui/mobile-ui-consistency-audit-prompt (structure vs visual)
+
+ui/mobile-ui-consistency-audit-prompt.txt
+  Purpose:    Visual and layout consistency across screens
+  Lifecycle:  ACTIVE
+  Overlaps:   ui/mobile-ui-components-audit-prompt (visual vs structure)
+
+ui/mobile-ui-accessibility-prompt.txt
+  Purpose:    Accessibility compliance across all screens
+  Lifecycle:  ACTIVE
+  Overlaps:   None
+
+ui/mobile-ui-redesign-prompt.txt
+  Purpose:    Full UI redesign workflow with design system
+  Lifecycle:  ACTIVE
+  Type:       Workflow (procedural)
+
+================================================================================
+CATEGORY E: UX FLOW & CONTENT
+================================================================================
+
+ui/mobile-ux-flow-friction-prompt.txt
+  Purpose:    User flow friction, unnecessary steps/decisions
+  Lifecycle:  ACTIVE
+  Overlaps:   None
+
+ui/ui-anti-ai-slop-redesign-prompt.txt
+  Purpose:    Remove AI-generated patterns, enforce human design
+  Lifecycle:  ACTIVE
+  Type:       Workflow (procedural)
+
+================================================================================
+CATEGORY F: FAILURE STATES & RECOVERY
+================================================================================
+
+ui/mobile-error-recovery-prompt.txt
+  Purpose:    User-facing error recovery paths and messaging
+  Lifecycle:  ACTIVE
+  Overlaps:   mobile-operability-prompt (user recovery vs incident response)
+
+================================================================================
+CATEGORY G: OBSERVABILITY & OPERABILITY
+================================================================================
+
+mobile-operability-prompt.txt
+  Purpose:    Production incident response capability
+  Lifecycle:  ACTIVE
+  Overlaps:   ui/mobile-observability-signal-quality-prompt (tools vs signals)
+
+ui/mobile-observability-signal-quality-prompt.txt
+  Purpose:    Signal quality, actionability of logs/metrics/alerts
+  Lifecycle:  ACTIVE
+  Overlaps:   mobile-operability-prompt (signal quality vs incident tools)
+
+mobile-security-privacy-prompt.txt
+  Purpose:    Data privacy, storage security, logging leaks
+  Lifecycle:  ACTIVE
+  Overlaps:   auth-session-safety-prompt (privacy vs auth)
+
+================================================================================
+CATEGORY H: LONG-TERM HEALTH
+================================================================================
+
+ui/mobile-long-term-maintainability-prompt.txt
+  Purpose:    Architecture durability, evolvability, knowledge preservation
+  Lifecycle:  ACTIVE
+  Overlaps:   mobile-blast-radius-prompt (architecture vs change impact)
