@@ -24,41 +24,61 @@ redpen copy auth-data-safety
 redpen done auth-data-safety
 ```
 
-Or pick specific audits:
-```bash
-redpen show nextjs-rendering
-redpen copy ui/mobile-responsive-layout-audit
-```
+### Scope
+
+redpen is a complete review lifecycle. It doesn't just check code; it enforced a strict 9-phase quality gate.
+
+#### 1. System Safety
+Force-check your database and auth boundaries before any UI work.
+- `auth-data-safety` — RLS policies, exposure risk
+- `data-consistency` — Transactions, idempotency
+- `invariant` — Business logic state machines
+- `human-error` — API usability and footguns
+
+#### 2. Framework & Ops
+Validate your Next.js architecture.
+- `nextjs-rendering` — Caching, hydration, boundaries
+- `operability` — Logger structure, tracing
+- `optimization` — Bundle size, render cycles
+
+#### 3. Testing
+Stop writing tests that always pass.
+- `test-generation` — Finds missing edge cases
+
+#### 4. UI System
+Enforce design discipline.
+- `ui/design-tokens-enforcement` — No magic values
+- `ui/ui-components-audit` — duplication detection
+- `ui/ui-consistency-audit` — Visual regression checks
+- `ui/ui-performance` — Render counting
+
+#### 5. Mobile
+The "Thumb Reach" standard.
+- `ui/mobile/mobile-responsive-layout-audit`
+- `ui/mobile/mobile-navigation-and-thumb-reach`
+- `ui/mobile/mobile-a11y-touch-audit`
+- `ui/mobile/mobile-forms-inputs`
+
+#### 6. Content & Polish
+- `content/product-copy-voice-guide`
+- `marketing/content-density`
 
 ### Principles
 
-redpen is built to catch what vibecoding misses.
-
-- **System Safety First** — Audit RLS, auth boundaries, and data invariants before UI polish.
-- **Enforcement** — Prompts are strict. They don't teach; they verify.
+- **Safety First** — Never audit UI on a broken backend.
+- **Enforcement** — Prompts are strict. They verify; they don't teach.
 - **One Voice** — Consistent senior-level judgment across every PR.
-- **Anti-Hallucination** — Forces agents to verify code exists before passing.
-
-### Capabilities
-
-The library contains 29 specialized audits:
-
-- **Safety**: `auth-data-safety`, `invariant`, `data-consistency`, `human-error`
-- **Framework**: `nextjs-rendering`, `optimization`, `operability`
-- **Mobile**: `mobile-responsive`, `thumb-reach`, `touch-targets`
-- **UI**: `design-tokens`, `a11y`, `error-boundaries`
-- **Content**: `voice-guide`, `content-density`
 
 ### FAQ
 
 #### How is this different from strict mode?
-Strict mode in prompts often just changes the tone. redpen prompts are strict *checklists* of specific failure modes (e.g., "Check if `revalidatePath` is used correctly in server actions").
+Strict mode just changes the tone. redpen prompts are strict *checklists* of specific failure modes (e.g., checking `revalidatePath` mechanics, not just style).
 
-#### Does it work with Cursor/Copilot?
-Yes. It is designed for it. The typical workflow is:
-1. Code feature with Cursor.
-2. Run `redpen copy <audit-type>`.
-3. Paste into Cursor Chat: "Audit my last changes using this rule set."
+#### Does it work with Cursor?
+Yes. It is designed for it.
+1. Build with Cursor.
+2. `redpen copy <audit>`.
+3. Paste into Cursor Chat: "Audit my last changes."
 
 #### Is this a replacement for tests?
-No. It helps you *write* the right tests (`test-generation-prompt`) and catches architecture bugs that unit tests miss.
+No. It helps you *write* the right tests and catches architecture bugs that unit tests miss.
