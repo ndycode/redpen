@@ -2,6 +2,8 @@
 
 # redpen
 
+<p align="center"><img src="assets/tui.png" width="700"></p>
+
 Code review checklist for AI-generated code. Step through prompts, paste into your AI, fix issues, mark done.
 
 ## Overview
