@@ -1,8 +1,22 @@
+<p align="center"><img src="https://img.shields.io/npm/v/redpen.svg?style=flat-square&color=e34671" alt="npm version"> <img src="https://img.shields.io/npm/dm/redpen.svg?style=flat-square" alt="downloads"> <img src="https://img.shields.io/github/stars/ndycode/redpen.svg?style=flat-square" alt="stars"> <img src="https://img.shields.io/github/license/ndycode/redpen.svg?style=flat-square" alt="license"></p>
+
 # redpen
 
-Audit prompts for AI-generated code. Run them before you ship.
+Code review checklist for AI-generated code. Step through prompts, paste into your AI, fix issues, mark done.
 
-## Install
+## Overview
+
+redpen is a CLI tool that guides you through a set of code review prompts. Each prompt tells an AI what to look for in your codebase. You copy the prompt, paste it into ChatGPT/Claude/Cursor, fix what it finds, then mark it done. Progress saves per git branch.
+
+## Features
+
+- **Interactive TUI**: Arrow keys to navigate, single-key actions
+- **Progress Tracking**: Saves per git branch, pick up where you left off
+- **Stack-Aware**: Loads prompts for your specific stack (Next.js, Supabase, Flutter, etc.)
+- **Custom Prompts**: Add your own prompts in `.redpen/` folder
+- **CI Integration**: Fail builds if prompts incomplete
+
+## Installation
 
 ```bash
 npm install -g redpen
@@ -11,68 +25,122 @@ npm install -g redpen
 ## Usage
 
 ```bash
-redpen              # opens the TUI
-redpen init         # first-time setup
+# Start the TUI
+redpen
+
+# First-time setup (picks your stack)
+redpen init
 ```
 
-The TUI lets you step through prompts one by one. Arrow keys to navigate, `r` to copy, `d` to mark done, `q` to quit.
+### Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `←` `→` or `h` `l` | Previous/next prompt |
+| `↑` `↓` or `k` `j` | Previous/next prompt |
+| `r` or `Enter` | Copy prompt to clipboard |
+| `d` | Mark done (or undo) |
+| `q` or `Esc` | Quit |
+
+## How It Works
+
+1. Run `redpen` - see the first prompt
+2. Press `r` - copies to clipboard
+3. Paste into your AI - it reviews your code
+4. Fix what it finds
+5. Press `d` - marks done, moves to next
+6. Repeat until complete
 
 ## Commands
 
-```bash
-redpen next         # show next prompt
-redpen copy [n]     # copy prompt n to clipboard
-redpen done [n]     # mark prompt n complete
-redpen skip [n]     # skip prompt n
-redpen undo         # undo last done
-redpen status       # show progress
-redpen list         # list all prompts
-redpen order [tag]  # show run order (optionally filter by tag)
-redpen reset        # clear all progress
-redpen check [cats] # CI mode - exit 1 if prompts incomplete
-redpen report       # generate markdown summary
-```
-
-## What it does
-
-You get a set of prompts organized by category. Each prompt tells an AI what to look for in your code. You copy the prompt, paste it into your AI, review the output, then mark it done.
-
-Progress is saved per git branch.
+| Command | Description |
+|---------|-------------|
+| `redpen` | Interactive TUI (recommended) |
+| `redpen init` | First-time setup |
+| `redpen next` | Show next prompt |
+| `redpen copy [n]` | Copy prompt n |
+| `redpen done [n]` | Mark prompt n complete |
+| `redpen skip [n]` | Skip prompt n |
+| `redpen undo` | Undo last done |
+| `redpen status` | Show progress |
+| `redpen list` | List all prompts |
+| `redpen order [tag]` | Show run order |
+| `redpen reset` | Clear progress |
+| `redpen check [cats]` | CI mode - exit 1 if incomplete |
+| `redpen report` | Markdown summary |
 
 ## Prompts
 
-Core prompts run on every project:
-- `core/security/*` - auth, data safety
-- `core/quality/*` - tests
-- `core/architecture/*` - observability
-- `core/process/*` - docs
+### Core (always loaded)
 
-Stack-specific prompts load based on your config:
-- `web/frontend/{nextjs,react,vue}/*`
-- `web/backend/{supabase,firebase,prisma}/*`
-- `web/interface/*` - design system, a11y
-- `mobile/{flutter,react-native,native}/*`
+| Category | What it checks |
+|----------|----------------|
+| `core/security/*` | Auth, data safety, access control |
+| `core/quality/*` | Test coverage, error handling |
+| `core/architecture/*` | Logging, monitoring, observability |
+| `core/process/*` | Documentation, code standards |
 
-## Custom prompts
+### Stack-Specific (based on config)
 
-Drop `.txt` files in `.redpen/` in your project root. They get added to the run order.
+| Stack | Prompts |
+|-------|---------|
+| Next.js | `web/frontend/nextjs/*` |
+| React | `web/frontend/react/*` |
+| Vue | `web/frontend/vue/*` |
+| Supabase | `web/backend/supabase/*` |
+| Firebase | `web/backend/firebase/*` |
+| Prisma | `web/backend/prisma/*` |
+| Flutter | `mobile/flutter/*` |
+| React Native | `mobile/react-native/*` |
+| Native iOS/Android | `mobile/native/*` |
 
-## CI
+## Custom Prompts
+
+Add `.txt` files to `.redpen/` in your project root:
+
+```
+your-project/
+  .redpen/
+    my-custom-check.txt
+    team/coding-standards.txt
+```
+
+They get added to the run order automatically.
+
+## CI Integration
 
 ```yaml
+# GitHub Actions
 - run: npx redpen check security,quality
 ```
 
-Fails the build if those categories have incomplete prompts.
+Exits with code 1 if security or quality prompts are incomplete.
 
-## Shell completion
+## Configuration
+
+Run `redpen init` to create `.redpenrc`:
+
+```json
+{
+  "platform": "web",
+  "frontend": "nextjs",
+  "backend": "supabase"
+}
+```
+
+## Shell Completion
 
 ```bash
+# Add to your shell profile
 eval "$(redpen completion)"
 ```
 
-## Why
+## Why This Exists
 
-AI writes plausible code. That does not mean correct code. These prompts force a second pass focused on the stuff AI tends to miss: edge cases, security holes, missing tests, production concerns.
+AI writes code that compiles and looks correct. But it misses things: security holes, missing error handling, edge cases, no tests, production gotchas.
 
-Run them. Fix what they find. Ship with confidence.
+These prompts catch what AI misses. Run them before you ship.
+
+## License
+
+MIT
