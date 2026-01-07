@@ -1,69 +1,62 @@
-# Prompt Workflow System
+# Prompt Workflow
 
-A self-contained, portable prompt execution tracker for AI-assisted development.
+Manual prompt execution system. For when you want to run prompts in a raw AI conversation instead of using the CLI.
 
-## Quick Start
+## Setup
 
-### 1. Copy to Any Project
-
-Copy the entire `/prompts` folder into your project root:
+Copy the `/prompts` folder into your project. Structure looks like:
 
 ```
 your-project/
-├── prompts/
-│   ├── workflow/
-│   │   ├── WORKFLOW_CONTROLLER_PROMPT.txt
-│   │   ├── prompt-progress.json
-│   │   ├── prompt-inventory.txt
-│   │   ├── run-order.txt
-│   │   └── commands-cheatsheet.txt
-│   ├── your-prompt-1.txt
-│   ├── your-prompt-2.txt
-│   └── README.md
+  prompts/
+    workflow/
+      WORKFLOW_CONTROLLER_PROMPT.txt
+      prompt-progress.json
+      prompt-inventory.txt
+      run-order.txt
+    some-prompt.txt
+    another-prompt.txt
 ```
 
-### 2. Start a Workflow Conversation
+## Running prompts
 
-In a new AI conversation, paste:
+Start a new AI conversation. Paste these files in order:
 
-1. The contents of `workflow/WORKFLOW_CONTROLLER_PROMPT.txt`
-2. The contents of `workflow/prompt-progress.json`
-3. The contents of `workflow/prompt-inventory.txt`
+1. `workflow/WORKFLOW_CONTROLLER_PROMPT.txt`
+2. `workflow/prompt-progress.json`
+3. `workflow/prompt-inventory.txt`
 
-Then issue commands: `/status`, `/next`, `/run <path>`, `/complete <path>`
+Then use commands:
 
-### 3. Update Progress After Completing Prompts
+- `/status` - see what is done
+- `/next` - get next prompt
+- `/run path/to/prompt.txt` - run a specific prompt
+- `/complete path/to/prompt.txt` - mark it done
 
-After successfully executing a prompt, issue:
+## Saving progress
 
-```
-/complete relative/path/to/prompt.txt
-```
+When you mark something complete, the AI outputs updated JSON. Copy that back into `prompt-progress.json`. Otherwise progress resets next conversation.
 
-The AI will update `prompt-progress.json` and output the new state.
-**You must save this output back to the file** for persistence across conversations.
+## Adding prompts
 
-### 4. Regenerate Inventory When Prompts Change
+If you add or remove prompt files:
 
-If you add, remove, or rename prompt files, regenerate the inventory:
+1. Delete `prompt-inventory.txt`
+2. Ask the AI to regenerate it by scanning `/prompts`
+3. Update `run-order.txt` if needed
 
-1. Delete `workflow/prompt-inventory.txt`
-2. Ask the AI: "Scan /prompts for all .txt files and regenerate prompt-inventory.txt"
-3. Update `workflow/run-order.txt` if needed
+## Files
 
-## File Descriptions
-
-| File | Purpose |
-|------|---------|
-| `WORKFLOW_CONTROLLER_PROMPT.txt` | System instructions for the AI controller |
-| `prompt-progress.json` | Tracks completed prompts (source of truth) |
-| `prompt-inventory.txt` | List of all available prompt files |
-| `run-order.txt` | Recommended execution order by phase |
-| `commands-cheatsheet.txt` | Quick reference for commands |
+| File | What it does |
+|------|--------------|
+| `WORKFLOW_CONTROLLER_PROMPT.txt` | Instructions for the AI |
+| `prompt-progress.json` | Tracks what is done |
+| `prompt-inventory.txt` | List of all prompts |
+| `run-order.txt` | Execution order |
 
 ## Rules
 
-- One prompt per `/run` command
-- Progress only updates via `/complete`
-- Never skip prompts without explicit instruction
-- Resume from any conversation by reloading state files
+- One prompt at a time
+- Only `/complete` updates progress
+- Do not skip prompts unless you mean to
+- Reload state files to resume in a new conversation

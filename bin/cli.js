@@ -507,6 +507,8 @@ function showHelp() {
     console.log(`
 redpen <command> [name|number]
 
+  ${c.yellow('interactive')}    ${c.dim('launch interactive TUI mode')}
+  
   init           select platform (web/mobile)
   run            copy next → wait → mark done
   
@@ -528,9 +530,15 @@ redpen <command> [name|number]
   reset          clear progress
   --version      show version
 
-Use numbers: redpen copy 3
-Custom prompts: add to .redpen/ folder
-Progress tracked per git branch
+${c.dim('Interactive Mode:')}
+  redpen interactive    ${c.dim('or')} redpen i
+  ${c.dim('/ - command palette, arrow keys to navigate')}
+  ${c.dim('1-9 quick copy, r=run, c=copy, d=done, q=quit')}
+
+${c.dim('Other:')}
+  Use numbers: redpen copy 3
+  Custom prompts: add to .redpen/ folder
+  Progress tracked per git branch
 `);
 }
 
@@ -700,7 +708,15 @@ const arg = args[1];
 (async () => {
     const runOrder = getRunOrder();
 
-    switch (command) {
+switch (command) {
+        case 'interactive':
+        case 'i':
+        case 'tui': {
+            const { RedpenTUI } = require('./tui.js');
+            const tui = new RedpenTUI();
+            await tui.start();
+            break;
+        }
         case 'init':
             await init();
             break;
@@ -802,11 +818,16 @@ const arg = args[1];
         case '-h':
             showHelp();
             break;
-        default:
+default:
             if (command) {
                 console.error(`unknown: ${command}`);
+                showHelp();
+            } else {
+                // No command - launch interactive TUI
+                const { TUI } = require('./tui.js');
+                const tui = new TUI();
+                tui.start();
             }
-            showHelp();
     }
 })();
 

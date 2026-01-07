@@ -1,6 +1,6 @@
 # redpen
 
-Production-grade audit prompts for AI-assisted codebases.
+Audit prompts for AI-generated code. Run them before you ship.
 
 ## Install
 
@@ -8,89 +8,71 @@ Production-grade audit prompts for AI-assisted codebases.
 npm install -g redpen
 ```
 
-## Setup
+## Usage
 
 ```bash
-redpen init
+redpen              # opens the TUI
+redpen init         # first-time setup
 ```
 
-### Platform Selection
-- **Web**: frontend (nextjs/react/vue) + backend (supabase/firebase/prisma)
-- **Mobile**: framework (flutter/react-native/native)
-
-Auto-detects Flutter (pubspec.yaml) and React Native.
+The TUI lets you step through prompts one by one. Arrow keys to navigate, `r` to copy, `d` to mark done, `q` to quit.
 
 ## Commands
 
 ```bash
-redpen init         # configure stack
-redpen run          # copy → wait → mark done
-
-redpen next         # what to run
-redpen order [tag]  # full sequence (filter: order security)
-redpen status       # progress
-redpen list         # all prompts
-
-redpen copy [n]     # copy prompt
-redpen show [n]     # print prompt
-redpen done [n]     # mark complete
-redpen skip [n]     # skip prompt
+redpen next         # show next prompt
+redpen copy [n]     # copy prompt n to clipboard
+redpen done [n]     # mark prompt n complete
+redpen skip [n]     # skip prompt n
 redpen undo         # undo last done
-
-redpen check [cats] # CI: fail if incomplete
-redpen report       # markdown audit summary
-redpen doctor       # validate config
-redpen completion   # shell completion script
-redpen reset        # clear progress
+redpen status       # show progress
+redpen list         # list all prompts
+redpen order [tag]  # show run order (optionally filter by tag)
+redpen reset        # clear all progress
+redpen check [cats] # CI mode - exit 1 if prompts incomplete
+redpen report       # generate markdown summary
 ```
 
-## Features
+## What it does
 
-### Numeric Shortcuts
-```bash
-redpen copy 3       # copy prompt #3
-```
+You get a set of prompts organized by category. Each prompt tells an AI what to look for in your code. You copy the prompt, paste it into your AI, review the output, then mark it done.
 
-### Tag Filtering
-```bash
-redpen order security    # show only security prompts
-```
+Progress is saved per git branch.
 
-### Custom Prompts
-Add project-specific prompts to `.redpen/` folder.
+## Prompts
 
-### Branch Progress
-Progress tracked per git branch.
+Core prompts run on every project:
+- `core/security/*` - auth, data safety
+- `core/quality/*` - tests
+- `core/architecture/*` - observability
+- `core/process/*` - docs
 
-### Shell Completion
-```bash
-eval "$(redpen completion)"
-```
+Stack-specific prompts load based on your config:
+- `web/frontend/{nextjs,react,vue}/*`
+- `web/backend/{supabase,firebase,prisma}/*`
+- `web/interface/*` - design system, a11y
+- `mobile/{flutter,react-native,native}/*`
 
-### CI Integration
+## Custom prompts
+
+Drop `.txt` files in `.redpen/` in your project root. They get added to the run order.
+
+## CI
+
 ```yaml
 - run: npx redpen check security,quality
 ```
 
-## Prompts
+Fails the build if those categories have incomplete prompts.
 
-### Core (always included)
-- `core/security/*` — authorization, data integrity
-- `core/quality/*` — test coverage
-- `core/architecture/*` — observability
-- `core/process/*` — documentation
+## Shell completion
 
-### Web Platform
-- `web/frontend/{nextjs,react,vue}/*`
-- `web/interface/*` — design system, accessibility
-- `web/backend/{supabase,firebase,prisma}/*`
+```bash
+eval "$(redpen completion)"
+```
 
-### Mobile Platform
-- `mobile/core/*` — shared mobile prompts (always loaded)
-- `mobile/flutter/*` — Flutter-specific
-- `mobile/react-native/*` — React Native-specific
-- `mobile/native/*` — iOS/Android native
+## Why
 
-## Philosophy
+AI writes plausible code. That does not mean correct code. These prompts force a second pass focused on the stuff AI tends to miss: edge cases, security holes, missing tests, production concerns.
 
-**Verification over Generation.** AI optimizes for plausibility. redpen enforces correctness.
+Run them. Fix what they find. Ship with confidence.
