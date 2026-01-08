@@ -13,6 +13,8 @@ redpen is a CLI tool that guides you through a set of code review prompts. Each 
 ## Features
 
 - **Interactive TUI**: Arrow keys to navigate, single-key actions
+- **First-Run Setup**: Auto-detects your stack, guided init wizard
+- **Fuzzy Search**: Press `/` to quickly find prompts
 - **Progress Tracking**: Saves per git branch, pick up where you left off
 - **Stack-Aware**: Loads prompts for your specific stack (Next.js, Supabase, Flutter, etc.)
 - **Custom Prompts**: Add your own prompts in `.redpen/` folder
@@ -27,31 +29,45 @@ npm install -g redpen
 ## Usage
 
 ```bash
-# Start the TUI
+# Start the TUI (runs init wizard on first use)
 redpen
 
-# First-time setup (picks your stack)
+# Or explicitly run setup
 redpen init
 ```
 
 ### Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `←` `→` or `h` `l` | Previous/next prompt |
-| `↑` `↓` or `k` `j` | Previous/next prompt |
-| `r` or `Enter` | Copy prompt to clipboard |
-| `d` | Mark done (or undo) |
-| `q` or `Esc` | Quit |
+| Key | Action |
+|-----|--------|
+| `r` / `Enter` | **Run**: copy + mark done + advance |
+| `c` | Copy only (no mark done) |
+| `s` | Skip prompt + advance |
+| `n` | Jump to next incomplete |
+| `d` | Toggle done / undo |
+| `/` | Search prompts (fuzzy) |
+| `?` | Help overlay |
+| `←` `→` `h` `l` | Previous / next prompt |
+| `↑` `↓` `k` `j` | Previous / next prompt |
+| `Home` `End` | First / last prompt |
+| `q` / `Esc` | Quit |
+
+### Search Mode (`/`)
+
+- Type to fuzzy filter prompts
+- `↑` `↓` to navigate results  
+- `Enter` to select
+- `Esc` to cancel
 
 ## How It Works
 
-1. Run `redpen` - see the first prompt
-2. Press `r` - copies to clipboard
+1. Run `redpen` - TUI opens at first incomplete prompt
+2. Press `r` - copies prompt, marks done, advances to next
 3. Paste into your AI - it reviews your code
 4. Fix what it finds
-5. Press `d` - marks done, moves to next
-6. Repeat until complete
+5. Repeat until complete
+
+**One key does it all** - no more `r` then `d` then arrow key.
 
 ## Commands
 
@@ -120,7 +136,9 @@ Exits with code 1 if security or quality prompts are incomplete.
 
 ## Configuration
 
-Run `redpen init` to create `.redpenrc`:
+Run `redpen init` or just run `redpen` - the TUI will guide you through setup on first use.
+
+Config is saved to `.redpenrc`:
 
 ```json
 {
@@ -129,6 +147,30 @@ Run `redpen init` to create `.redpenrc`:
   "backend": "supabase"
 }
 ```
+
+For mobile:
+
+```json
+{
+  "platform": "mobile",
+  "framework": "flutter"
+}
+```
+
+## Auto-Detection
+
+redpen automatically detects your stack from:
+
+| File | Detection |
+|------|-----------|
+| `pubspec.yaml` | Flutter |
+| `react-native` in package.json | React Native |
+| `next` in package.json | Next.js |
+| `@supabase/supabase-js` | Supabase |
+| `firebase` | Firebase |
+| `@prisma/client` | Prisma |
+
+Detected values are pre-selected in the init wizard.
 
 ## Shell Completion
 
