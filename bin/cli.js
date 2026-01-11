@@ -2,11 +2,56 @@
 
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
+const crypto = require('crypto');
 const { execSync } = require('child_process');
 
 const PROMPTS_DIR = path.join(__dirname, '..', 'prompts');
-const CONFIG_FILE = path.join(process.cwd(), '.redpenrc');
 const CUSTOM_DIR = path.join(process.cwd(), '.redpen');
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONFIG DIRECTORY (XDG-compliant, per-platform)
+// ═══════════════════════════════════════════════════════════════════════════════
+function getConfigDir() {
+    const home = os.homedir();
+    let baseDir;
+    
+    switch (process.platform) {
+        case 'win32':
+            baseDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'redpen');
+            break;
+        case 'darwin':
+            baseDir = path.join(home, 'Library', 'Application Support', 'redpen');
+            break;
+        default: // linux, etc
+            baseDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'redpen');
+            break;
+    }
+    
+    return baseDir;
+}
+
+function getProjectHash() {
+    // Use git remote URL as unique identifier, fallback to cwd
+    try {
+        const remote = execSync('git config --get remote.origin.url', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
+        return crypto.createHash('md5').update(remote).digest('hex').slice(0, 12);
+    } catch {
+        return crypto.createHash('md5').update(process.cwd()).digest('hex').slice(0, 12);
+    }
+}
+
+function getProjectConfigDir() {
+    const dir = path.join(getConfigDir(), 'projects', getProjectHash());
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+    return dir;
+}
+
+function getConfigFile() {
+    return path.join(getProjectConfigDir(), 'config.json');
+}
 
 // Colors
 const c = {
@@ -32,21 +77,22 @@ function getBranch() {
 
 function getProgressFile() {
     const branch = getBranch();
-    if (branch) {
-        return path.join(process.cwd(), `.redpen-progress-${branch.replace(/[^a-zA-Z0-9-]/g, '-')}.json`);
-    }
-    return path.join(process.cwd(), '.redpen-progress.json');
+    const filename = branch 
+        ? `progress-${branch.replace(/[^a-zA-Z0-9-]/g, '-')}.json`
+        : 'progress.json';
+    return path.join(getProjectConfigDir(), filename);
 }
 
 function getConfig() {
-    if (fs.existsSync(CONFIG_FILE)) {
-        return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
+    const configFile = getConfigFile();
+    if (fs.existsSync(configFile)) {
+        return JSON.parse(fs.readFileSync(configFile, 'utf-8'));
     }
     return null;
 }
 
 function saveConfig(config) {
-    fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
+    fs.writeFileSync(getConfigFile(), JSON.stringify(config, null, 2));
 }
 
 function scanDir(dir) {
@@ -672,11 +718,13 @@ function doctor() {
 
     // Check config
     const config = getConfig();
+    const configFile = getConfigFile();
     if (!config) {
-        console.log('⚠ no .redpenrc found (run: redpen init)');
+        console.log(`⚠ no config found at ${configFile} (run: redpen init)`);
         issues++;
     } else {
         console.log(`✓ config: platform=${config.platform}`);
+        console.log(`  location: ${configFile}`);
     }
 
     // Check prompts folder

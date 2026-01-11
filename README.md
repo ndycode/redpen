@@ -15,7 +15,7 @@ redpen is a CLI tool that guides you through a set of code review prompts. Each 
 - **Interactive TUI**: Arrow keys to navigate, single-key actions
 - **First-Run Setup**: Auto-detects your stack, guided init wizard
 - **Fuzzy Search**: Press `/` to quickly find prompts
-- **Progress Tracking**: Saves per git branch, pick up where you left off
+- **Progress Tracking**: Saves per git branch in user directory (keeps project clean)
 - **Stack-Aware**: Loads prompts for your specific stack (Next.js, Supabase, Flutter, etc.)
 - **Custom Prompts**: Add your own prompts in `.redpen/` folder
 - **CI Integration**: Fail builds if prompts incomplete
@@ -138,7 +138,23 @@ Exits with code 1 if security or quality prompts are incomplete.
 
 Run `redpen init` or just run `redpen` - the TUI will guide you through setup on first use.
 
-Config is saved to `.redpenrc`:
+Config and progress are stored in your user directory (not in the project):
+
+| Platform | Location |
+|----------|----------|
+| **Linux** | `~/.config/redpen/projects/<hash>/` |
+| **macOS** | `~/Library/Application Support/redpen/projects/<hash>/` |
+| **Windows** | `%APPDATA%\redpen\projects\<hash>\` |
+
+Each project gets its own folder (identified by git remote URL hash). Inside:
+
+```
+config.json           # Your stack settings
+progress-main.json    # Progress for 'main' branch
+progress-feature.json # Progress for 'feature' branch
+```
+
+Example `config.json`:
 
 ```json
 {
@@ -156,6 +172,8 @@ For mobile:
   "framework": "flutter"
 }
 ```
+
+Run `redpen doctor` to see where your config is stored.
 
 ## Auto-Detection
 
