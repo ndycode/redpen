@@ -1,59 +1,64 @@
 {
-    "name": "redpen",
-    "version": "1.6.0",
-    "description": "A senior engineer review system in a box. Production-grade prompts for auditing AI-assisted codebases.",
-    "main": "index.js",
-    "bin": {
-        "redpen": "./bin/cli.js"
-    },
-    "scripts": {
-        "test": "echo \"No tests yet\" && exit 0",
-        "tui": "bun run tui-src/app.tsx"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/ndycode/redpen.git"
-    },
-    "keywords": [
-        "code-review",
-        "prompts",
-        "audit",
-        "vibecoding",
-        "ai-coding",
-        "quality",
-        "guardrails",
-        "nextjs",
-        "supabase",
-        "production"
-    ],
-    "author": "",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/ndycode/redpen/issues"
-    },
-    "homepage": "https://github.com/ndycode/redpen#readme",
-    "files": [
-        "bin/",
-        "prompts/",
-        "workflow/",
-        "index.js"
-    ],
-    "engines": {
-        "node": ">=16.0.0"
-    },
-    "dependencies": {
-        "@inquirer/confirm": "^6.0.3",
-        "@inquirer/input": "^5.0.3",
-        "@inquirer/search": "^4.0.3",
-        "@inquirer/select": "^5.0.3",
-        "@opentui/core": "^0.1.69",
-        "@opentui/solid": "^0.1.69",
-        "fuzzysort": "^3.1.0",
-        "inquirer": "^9.2.12",
-        "solid-js": "^1.9.10"
-    },
-    "devDependencies": {
-        "bun-types": "^1.3.5",
-        "typescript": "^5.9.3"
-    }
+  "name": "redpen",
+  "version": "1.6.0",
+  "description": "A senior engineer review system in a box. Production-grade prompts for auditing AI-assisted codebases.",
+  "main": "index.js",
+  "bin": {
+    "redpen": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ndycode/redpen.git"
+  },
+  "keywords": [
+    "code-review",
+    "prompts",
+    "audit",
+    "vibecoding",
+    "ai-coding",
+    "quality",
+    "guardrails",
+    "nextjs",
+    "supabase",
+    "production"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ndycode/redpen/issues"
+  },
+  "homepage": "https://github.com/ndycode/redpen#readme",
+  "files": [
+    "bin/",
+    "lib/",
+    "prompts/",
+    "workflow/",
+    "index.js"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "1.6.0",
+    "eslint": "^8.57.0",
+    "husky": "9.1.7",
+    "lint-staged": "16.2.7",
+    "prettier": "^3.2.5",
+    "vitest": "^1.6.0"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
 }

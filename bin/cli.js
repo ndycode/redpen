@@ -1,370 +1,43 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const crypto = require('crypto');
-const { execSync } = require('child_process');
 
-const PROMPTS_DIR = path.join(__dirname, '..', 'prompts');
-const CUSTOM_DIR = path.join(process.cwd(), '.redpen');
+const lib = require('../lib');
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// CONFIG DIRECTORY (XDG-compliant, per-platform)
-// ═══════════════════════════════════════════════════════════════════════════════
-function getConfigDir() {
-    const home = os.homedir();
-    let baseDir;
-    
-    switch (process.platform) {
-        case 'win32':
-            baseDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'redpen');
-            break;
-        case 'darwin':
-            baseDir = path.join(home, 'Library', 'Application Support', 'redpen');
-            break;
-        default: // linux, etc
-            baseDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'redpen');
-            break;
-    }
-    
-    return baseDir;
-}
-
-function getProjectHash() {
-    // Use git remote URL as unique identifier, fallback to cwd
-    try {
-        const remote = execSync('git config --get remote.origin.url', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
-        return crypto.createHash('md5').update(remote).digest('hex').slice(0, 12);
-    } catch {
-        return crypto.createHash('md5').update(process.cwd()).digest('hex').slice(0, 12);
-    }
-}
-
-function getProjectConfigDir() {
-    const dir = path.join(getConfigDir(), 'projects', getProjectHash());
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-    }
-    return dir;
-}
-
-function getConfigFile() {
-    return path.join(getProjectConfigDir(), 'config.json');
-}
-
-// Colors
-const c = {
-    green: s => `\x1b[32m${s}\x1b[0m`,
-    yellow: s => `\x1b[33m${s}\x1b[0m`,
-    dim: s => `\x1b[2m${s}\x1b[0m`,
-    reset: '\x1b[0m'
-};
-
-const DEFAULTS = {
-    platform: 'web',
-    frontend: 'nextjs',
-    backend: 'supabase'
-};
-
-function getBranch() {
-    try {
-        return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf-8' }).trim();
-    } catch {
-        return null;
-    }
-}
-
-function getProgressFile() {
-    const branch = getBranch();
-    const filename = branch 
-        ? `progress-${branch.replace(/[^a-zA-Z0-9-]/g, '-')}.json`
-        : 'progress.json';
-    return path.join(getProjectConfigDir(), filename);
-}
-
-function getConfig() {
-    const configFile = getConfigFile();
-    if (fs.existsSync(configFile)) {
-        return JSON.parse(fs.readFileSync(configFile, 'utf-8'));
-    }
-    return null;
-}
-
-function saveConfig(config) {
-    fs.writeFileSync(getConfigFile(), JSON.stringify(config, null, 2));
-}
-
-function scanDir(dir) {
-    if (!fs.existsSync(dir)) return [];
-    const files = [];
-    fs.readdirSync(dir).forEach(file => {
-        const fullPath = path.join(dir, file);
-        if (fs.statSync(fullPath).isFile() && file.endsWith('.txt')) {
-            files.push(fullPath);
-        }
-    });
-    return files.sort();
-}
-
-function scanDirRecursive(dir) {
-    if (!fs.existsSync(dir)) return [];
-    const files = [];
-    fs.readdirSync(dir).forEach(file => {
-        const fullPath = path.join(dir, file);
-        const stat = fs.statSync(fullPath);
-        if (stat.isDirectory() && file !== 'workflow') {
-            scanDirRecursive(fullPath).forEach(f => files.push(f));
-        } else if (stat.isFile() && file.endsWith('.txt')) {
-            files.push(fullPath);
-        }
-    });
-    return files.sort();
-}
-
-function buildRunOrder(config) {
-    const prompts = [];
-
-    // Core (always included)
-    ['security', 'quality', 'architecture', 'process'].forEach(category => {
-        scanDir(path.join(PROMPTS_DIR, 'core', category)).forEach(f => prompts.push(f));
-    });
-
-    if (config.platform === 'mobile') {
-        // Mobile platform - core always, then framework-specific
-        scanDirRecursive(path.join(PROMPTS_DIR, 'mobile', 'core')).forEach(f => prompts.push(f));
-        if (config.framework && config.framework !== 'none') {
-            scanDirRecursive(path.join(PROMPTS_DIR, 'mobile', config.framework)).forEach(f => prompts.push(f));
-        }
-    } else {
-        // Web platform (default)
-        if (config.frontend && config.frontend !== 'none') {
-            scanDir(path.join(PROMPTS_DIR, 'web', 'frontend', config.frontend)).forEach(f => prompts.push(f));
-            scanDir(path.join(PROMPTS_DIR, 'web', 'interface')).forEach(f => prompts.push(f));
-        }
-        if (config.backend && config.backend !== 'none') {
-            scanDir(path.join(PROMPTS_DIR, 'web', 'backend', config.backend)).forEach(f => prompts.push(f));
-        }
-        scanDir(path.join(PROMPTS_DIR, 'web', 'product')).forEach(f => prompts.push(f));
-        scanDir(path.join(PROMPTS_DIR, 'web', 'growth')).forEach(f => prompts.push(f));
-    }
-
-    // Custom prompts (from .redpen/ in project root)
-    if (fs.existsSync(CUSTOM_DIR)) {
-        scanDirRecursive(CUSTOM_DIR).forEach(f => {
-            prompts.push(f);
-        });
-    }
-
-    return prompts.map(p => {
-        if (p.startsWith(CUSTOM_DIR)) {
-            return 'custom/' + path.relative(CUSTOM_DIR, p).replace(/\\/g, '/');
-        }
-        return path.relative(PROMPTS_DIR, p).replace(/\\/g, '/');
-    });
-}
-
-function getRunOrder() {
-    const config = getConfig() || DEFAULTS;
-    return buildRunOrder(config);
-}
-
-function getProgress() {
-    const progressFile = getProgressFile();
-    if (fs.existsSync(progressFile)) {
-        return JSON.parse(fs.readFileSync(progressFile, 'utf-8'));
-    }
-    return { completed: [] };
-}
-
-function saveProgress(progress) {
-    fs.writeFileSync(getProgressFile(), JSON.stringify(progress, null, 2));
-}
-
-function getPromptName(filename) {
-    return filename.replace('.txt', '');
-}
-
-function findPromptFile(name, runOrder) {
-    const exactMatch = runOrder.find(p => p === name || p === `${name}.txt` || p.endsWith(`/${name}.txt`));
-    if (exactMatch) return exactMatch;
-
-    const partialMatch = runOrder.find(p => p.includes(name));
-    if (partialMatch) return partialMatch;
-
-    return null;
-}
-
-function findPromptByNumber(num, runOrder) {
-    const index = parseInt(num, 10) - 1;
-    if (index >= 0 && index < runOrder.length) {
-        return runOrder[index];
-    }
-    return null;
-}
-
-function resolvePrompt(arg, runOrder) {
-    // Try numeric first
-    if (/^\d+$/.test(arg)) {
-        return findPromptByNumber(arg, runOrder);
-    }
-    // Then name-based
-    return findPromptFile(arg, runOrder);
-}
-
-function detectStack() {
-    const pkgPath = path.join(process.cwd(), 'package.json');
-    const pubspecPath = path.join(process.cwd(), 'pubspec.yaml');
-
-    // Check for Flutter (pubspec.yaml)
-    if (fs.existsSync(pubspecPath)) {
-        return { platform: 'mobile' };
-    }
-
-    if (!fs.existsSync(pkgPath)) return DEFAULTS;
-
-    try {
-        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-        const deps = { ...pkg.dependencies, ...pkg.devDependencies };
-
-        // Check for React Native
-        if (deps['react-native']) {
-            return { platform: 'mobile' };
-        }
-
-        const detected = {
-            platform: 'web',
-            frontend: 'none',
-            backend: 'none'
-        };
-
-        // Frontend
-        if (deps['next']) detected.frontend = 'nextjs';
-        else if (deps['react']) detected.frontend = 'react';
-        else if (deps['vue']) detected.frontend = 'vue';
-
-        // Backend
-        if (deps['@supabase/supabase-js']) detected.backend = 'supabase';
-        else if (deps['firebase']) detected.backend = 'firebase';
-        else if (deps['@prisma/client']) detected.backend = 'prisma';
-
-        return detected;
-    } catch {
-        return DEFAULTS;
-    }
-}
-
-function getVersion() {
-    const pkgPath = path.join(__dirname, '..', 'package.json');
-    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-    return pkg.version;
-}
-
-async function interactiveSelect(action) {
-    const { default: inquirer } = await import('inquirer');
-    const Separator = inquirer.Separator;
-    const progress = getProgress();
-    const runOrder = getRunOrder();
-
-    const categories = {};
-    runOrder.forEach((prompt, index) => {
-        const parts = prompt.split('/');
-        let category;
-        if (parts[0] === 'core') {
-            category = parts[1];
-        } else if (parts[0] === 'web') {
-            category = parts[1];
-        } else if (parts[0] === 'mobile') {
-            category = parts.length > 2 ? parts[1] : 'mobile';
-        } else {
-            category = parts[0];
-        }
-        if (!categories[category]) categories[category] = [];
-        categories[category].push({ prompt, index });
-    });
-
-    const choices = [];
-    const categoryOrder = ['security', 'architecture', 'quality', 'process', 'frontend', 'backend', 'interface', 'product', 'growth', 'mobile', 'ui'];
-
-    categoryOrder.forEach(category => {
-        if (categories[category]) {
-            choices.push(new Separator(`\n${category}`));
-            categories[category].forEach(({ prompt, index }) => {
-                const done = progress.completed.includes(prompt);
-                const mark = done ? 'x' : ' ';
-                const name = prompt.replace('.txt', '');
-                choices.push({
-                    name: `[${mark}] ${String(index + 1).padStart(2)}  ${name}`,
-                    value: prompt,
-                    short: name
-                });
-            });
-        }
-    });
-
-    const { selected } = await inquirer.prompt([
-        {
-            type: 'list',
-            name: 'selected',
-            message: action,
-            choices,
-            loop: false,
-            pageSize: 20
-        }
-    ]);
-
-    return selected;
-}
-
+const c = lib.colors;
 
 function showPrompt(promptFile) {
-    const fullPath = path.join(PROMPTS_DIR, promptFile);
-    if (!fs.existsSync(fullPath)) {
+    const content = lib.getPromptContent(promptFile);
+    if (!content) {
         console.error(`not found: ${promptFile}`);
         process.exit(1);
     }
-    console.log(fs.readFileSync(fullPath, 'utf-8'));
+    console.log(content);
 }
 
 function copyPrompt(promptFile) {
-    const fullPath = path.join(PROMPTS_DIR, promptFile);
-    if (!fs.existsSync(fullPath)) {
+    const content = lib.getPromptContent(promptFile);
+    if (!content) {
         console.error(`not found: ${promptFile}`);
         process.exit(1);
     }
-    const content = fs.readFileSync(fullPath, 'utf-8');
 
-    try {
-        require('child_process').execSync(
-            process.platform === 'win32' ? 'clip' : 'pbcopy',
-            { input: content }
-        );
+    if (lib.copyToClipboard(content)) {
         console.log(`copied: ${promptFile}`);
-    } catch {
+    } else {
         console.log(content);
     }
 }
 
 function showOrder(tagFilter) {
-    const progress = getProgress();
-    const runOrder = getRunOrder();
+    const progress = lib.getProgress();
+    const runOrder = lib.getRunOrder();
     let currentCategory = '';
-    const next = runOrder.find(p => !progress.completed.includes(p));
+    const next = runOrder.find((p) => !progress.completed.includes(p));
 
     runOrder.forEach((prompt, i) => {
-        const parts = prompt.split('/');
-        let category;
-        if (parts[0] === 'core') {
-            category = parts[1];
-        } else if (parts[0] === 'web') {
-            category = parts[1];
-        } else if (parts[0] === 'mobile') {
-            category = parts.length > 2 ? parts[1] : 'mobile';
-        } else {
-            category = parts[0];
-        }
+        const category = lib.getPromptCategory(prompt);
 
-        // Tag filter
         if (tagFilter && category !== tagFilter) return;
 
         if (category !== currentCategory) {
@@ -374,7 +47,7 @@ function showOrder(tagFilter) {
         const done = progress.completed.includes(prompt);
         const isNext = prompt === next;
         const mark = done ? 'x' : ' ';
-        const name = prompt.replace('.txt', '');
+        const name = lib.getPromptName(prompt);
         const num = String(i + 1).padStart(2);
 
         let line = `  [${mark}] ${num}  ${name}`;
@@ -391,9 +64,9 @@ function showOrder(tagFilter) {
 }
 
 function showNext() {
-    const progress = getProgress();
-    const runOrder = getRunOrder();
-    const next = runOrder.find(p => !progress.completed.includes(p));
+    const progress = lib.getProgress();
+    const runOrder = lib.getRunOrder();
+    const next = runOrder.find((p) => !progress.completed.includes(p));
 
     if (!next) {
         console.log('done');
@@ -401,32 +74,26 @@ function showNext() {
     }
 
     const index = runOrder.indexOf(next) + 1;
-    const name = next.replace('.txt', '');
+    const name = lib.getPromptName(next);
     console.log(`${index}/${runOrder.length}  ${name}`);
 }
 
 function markDone(promptFile) {
-    const progress = getProgress();
-    const runOrder = getRunOrder();
-    if (!progress.completed.includes(promptFile)) {
-        progress.completed.push(promptFile);
-        // Version tracking
-        if (!progress.versions) progress.versions = {};
-        progress.versions[promptFile] = getVersion();
-        saveProgress(progress);
-    }
-    console.log(`done: ${promptFile.replace('.txt', '')}`);
+    lib.markDone(promptFile);
+    console.log(`done: ${lib.getPromptName(promptFile)}`);
 
-    const next = runOrder.find(p => !progress.completed.includes(p));
+    const progress = lib.getProgress();
+    const runOrder = lib.getRunOrder();
+    const next = runOrder.find((p) => !progress.completed.includes(p));
     if (next) {
         const index = runOrder.indexOf(next) + 1;
-        console.log(`next: ${index}/${runOrder.length}  ${next.replace('.txt', '')}`);
+        console.log(`next: ${index}/${runOrder.length}  ${lib.getPromptName(next)}`);
     }
 }
 
 function showStatus() {
-    const progress = getProgress();
-    const runOrder = getRunOrder();
+    const progress = lib.getProgress();
+    const runOrder = lib.getRunOrder();
     const total = runOrder.length;
     const done = progress.completed.length;
 
@@ -438,100 +105,73 @@ function showStatus() {
 }
 
 function showList() {
-    const runOrder = getRunOrder();
+    const runOrder = lib.getRunOrder();
     let currentCategory = '';
     runOrder.forEach((p, i) => {
-        const parts = p.split('/');
-        let category;
-        if (parts[0] === 'core') {
-            category = parts[1];
-        } else if (parts[0] === 'web') {
-            category = parts[1];
-        } else if (parts[0] === 'mobile') {
-            category = parts.length > 2 ? parts[1] : 'mobile';
-        } else {
-            category = parts[0];
-        }
+        const category = lib.getPromptCategory(p);
         if (category !== currentCategory) {
             currentCategory = category;
             console.log(`\n${category}`);
         }
-        console.log(`  ${String(i + 1).padStart(2)}  ${p.replace('.txt', '')}`);
+        console.log(`  ${String(i + 1).padStart(2)}  ${lib.getPromptName(p)}`);
     });
     console.log('');
 }
 
 function skip(promptFile) {
-    const progress = getProgress();
-    if (!progress.skipped) progress.skipped = [];
-    if (!progress.skipped.includes(promptFile)) {
-        progress.skipped.push(promptFile);
-        saveProgress(progress);
-    }
-    console.log(`skipped: ${promptFile.replace('.txt', '')}`);
+    lib.markSkipped(promptFile);
+    console.log(`skipped: ${lib.getPromptName(promptFile)}`);
     showNext();
 }
 
 function undo() {
-    const progress = getProgress();
-    if (progress.completed.length === 0) {
+    const last = lib.undoLast();
+    if (!last) {
         console.log('nothing to undo');
         return;
     }
-    const last = progress.completed.pop();
-    if (progress.versions) delete progress.versions[last];
-    saveProgress(progress);
-    console.log(`undone: ${last.replace('.txt', '')}`);
+    console.log(`undone: ${lib.getPromptName(last)}`);
 }
 
 async function run() {
-    const progress = getProgress();
-    const runOrder = getRunOrder();
-    const next = runOrder.find(p => !progress.completed.includes(p));
+    const progress = lib.getProgress();
+    const runOrder = lib.getRunOrder();
+    const next = runOrder.find((p) => !progress.completed.includes(p));
 
     if (!next) {
         console.log('all prompts complete');
         return;
     }
 
-    // Copy to clipboard
-    const fullPath = path.join(PROMPTS_DIR, next);
-    const content = fs.readFileSync(fullPath, 'utf-8');
-    try {
-        require('child_process').execSync(
-            process.platform === 'win32' ? 'clip' : 'pbcopy',
-            { input: content }
-        );
-    } catch { }
+    const content = lib.getPromptContent(next);
+    lib.copyToClipboard(content);
 
     const index = runOrder.indexOf(next) + 1;
-    console.log(`\ncopied: ${next.replace('.txt', '')} (${index}/${runOrder.length})`);
+    console.log(`\ncopied: ${lib.getPromptName(next)} (${index}/${runOrder.length})`);
     console.log('\n→ Paste in your AI editor, run audit, fix issues');
     console.log('→ Press Enter when complete...\n');
 
-    const { default: inquirer } = await import('inquirer');
-    await inquirer.prompt([{ type: 'input', name: 'confirm', message: '' }]);
+    await lib.pressEnter('');
 
     markDone(next);
 }
 
 function check(required) {
-    const progress = getProgress();
-    const runOrder = getRunOrder();
+    const progress = lib.getProgress();
+    const runOrder = lib.getRunOrder();
 
     let categories = [];
     if (required) {
-        categories = required.split(',').map(c => c.trim().toLowerCase());
+        categories = required.split(',').map((c) => c.trim().toLowerCase());
     }
 
     const missing = [];
-    runOrder.forEach(p => {
+    runOrder.forEach((p) => {
         if (!progress.completed.includes(p)) {
             if (categories.length === 0) {
                 missing.push(p);
             } else {
-                const parts = p.split('/');
-                const cat = parts[0] === 'core' ? parts[1] : parts[0];
+                const cat = lib.getPromptCategory(p);
                 if (categories.includes(cat)) {
                     missing.push(p);
                 }
@@ -544,7 +184,7 @@ function check(required) {
         process.exit(0);
     } else {
         console.log(`missing ${missing.length} required prompt(s):`);
-        missing.forEach(m => console.log(`  ${m.replace('.txt', '')}`));
+        missing.forEach((m) => console.log(`  ${lib.getPromptName(m)}`));
         process.exit(1);
     }
 }
@@ -612,101 +252,104 @@ complete -F _redpen redpen
 }
 
 async function init() {
-    const { default: inquirer } = await import('inquirer');
-    const detected = detectStack();
+    const detected = lib.detectStack();
 
     console.log(`detected: ${detected.platform}`);
 
-    const { platform } = await inquirer.prompt([
-        {
-            type: 'list',
-            name: 'platform',
-            message: 'platform',
-            default: detected.platform,
-            choices: ['web', 'mobile']
-        }
-    ]);
+    const platform = await lib.select({
+        message: 'platform',
+        choices: [
+            { name: 'web', value: 'web' },
+            { name: 'mobile', value: 'mobile' },
+        ],
+        default: detected.platform,
+    });
 
     let config = { platform };
 
     if (platform === 'web') {
-        const webAnswers = await inquirer.prompt([
-            {
-                type: 'list',
-                name: 'frontend',
-                message: 'frontend',
-                default: detected.frontend || 'nextjs',
-                choices: ['nextjs', 'react', 'vue', 'none']
-            },
-            {
-                type: 'list',
-                name: 'backend',
-                message: 'backend',
-                default: detected.backend || 'supabase',
-                choices: ['supabase', 'firebase', 'prisma', 'none']
-            }
-        ]);
-        config = { ...config, ...webAnswers };
+        const frontend = await lib.select({
+            message: 'frontend',
+            choices: [
+                { name: 'nextjs', value: 'nextjs' },
+                { name: 'react', value: 'react' },
+                { name: 'vue', value: 'vue' },
+                { name: 'none', value: 'none' },
+            ],
+            default: detected.frontend || 'nextjs',
+        });
+
+        const backend = await lib.select({
+            message: 'backend',
+            choices: [
+                { name: 'supabase', value: 'supabase' },
+                { name: 'firebase', value: 'firebase' },
+                { name: 'prisma', value: 'prisma' },
+                { name: 'none', value: 'none' },
+            ],
+            default: detected.backend || 'supabase',
+        });
+
+        config = { ...config, frontend, backend };
     } else {
-        const mobileAnswers = await inquirer.prompt([
-            {
-                type: 'list',
-                name: 'framework',
-                message: 'framework',
-                default: 'flutter',
-                choices: ['flutter', 'react-native', 'native', 'none']
-            }
-        ]);
-        config = { ...config, ...mobileAnswers };
+        const framework = await lib.select({
+            message: 'framework',
+            choices: [
+                { name: 'flutter', value: 'flutter' },
+                { name: 'react-native', value: 'react-native' },
+                { name: 'native', value: 'native' },
+                { name: 'none', value: 'none' },
+            ],
+            default: 'flutter',
+        });
+
+        config = { ...config, framework };
     }
 
-    saveConfig(config);
-    const runOrder = getRunOrder();
+    lib.saveConfig(config);
+    const runOrder = lib.getRunOrder();
     console.log(`\n${runOrder.length} prompts`);
 }
 
 function reset() {
-    const progressFile = getProgressFile();
-    if (fs.existsSync(progressFile)) {
-        fs.unlinkSync(progressFile);
-    }
+    lib.resetProgress();
     console.log('reset');
 }
 
 function report() {
-    const progress = getProgress();
-    const runOrder = getRunOrder();
-    const config = getConfig() || DEFAULTS;
+    const progress = lib.getProgress();
+    const runOrder = lib.getRunOrder();
+    const config = lib.getConfig() || lib.DEFAULTS;
 
-    let md = `# Audit Report\n\n`;
+    let md = '# Audit Report\n\n';
     md += `**Platform**: ${config.platform}\n`;
     md += `**Progress**: ${progress.completed.length}/${runOrder.length}\n`;
     md += `**Generated**: ${new Date().toISOString()}\n\n`;
 
-    md += `## Completed\n\n`;
+    md += '## Completed\n\n';
     if (progress.completed.length === 0) {
-        md += `_None_\n`;
+        md += '_None_\n';
     } else {
-        progress.completed.forEach(p => {
+        progress.completed.forEach((p) => {
             const version = progress.versions?.[p] || 'unknown';
-            md += `- [x] ${p.replace('.txt', '')} (v${version})\n`;
+            md += `- [x] ${lib.getPromptName(p)} (v${version})\n`;
         });
     }
 
-    md += `\n## Pending\n\n`;
-    const pending = runOrder.filter(p => !progress.completed.includes(p));
+    md += '\n## Pending\n\n';
+    const pending = runOrder.filter((p) => !progress.completed.includes(p));
     if (pending.length === 0) {
-        md += `_All complete_\n`;
+        md += '_All complete_\n';
     } else {
-        pending.forEach(p => {
-            md += `- [ ] ${p.replace('.txt', '')}\n`;
+        pending.forEach((p) => {
+            md += `- [ ] ${lib.getPromptName(p)}\n`;
         });
     }
 
     if (progress.skipped?.length > 0) {
-        md += `\n## Skipped\n\n`;
-        progress.skipped.forEach(p => {
-            md += `- ${p.replace('.txt', '')}\n`;
+        md += '\n## Skipped\n\n';
+        progress.skipped.forEach((p) => {
+            md += `- ${lib.getPromptName(p)}\n`;
         });
     }
 
@@ -716,9 +359,8 @@ function report() {
 function doctor() {
     let issues = 0;
 
-    // Check config
-    const config = getConfig();
-    const configFile = getConfigFile();
+    const config = lib.getConfig();
+    const configFile = lib.getConfigFile();
     if (!config) {
         console.log(`⚠ no config found at ${configFile} (run: redpen init)`);
         issues++;
@@ -727,17 +369,15 @@ function doctor() {
         console.log(`  location: ${configFile}`);
     }
 
-    // Check prompts folder
-    if (!fs.existsSync(PROMPTS_DIR)) {
+    if (!fs.existsSync(lib.PROMPTS_DIR)) {
         console.log('✗ prompts folder missing');
         issues++;
     } else {
-        const runOrder = getRunOrder();
+        const runOrder = lib.getRunOrder();
         console.log(`✓ prompts: ${runOrder.length} found`);
     }
 
-    // Check progress file
-    const progress = getProgress();
+    const progress = lib.getProgress();
     console.log(`✓ progress: ${progress.completed.length} completed`);
 
     if (issues === 0) {
@@ -748,20 +388,69 @@ function doctor() {
     }
 }
 
-// CLI Entry
+async function interactiveSelect(action) {
+    const progress = lib.getProgress();
+    const runOrder = lib.getRunOrder();
+
+    const categories = {};
+    runOrder.forEach((prompt, index) => {
+        const category = lib.getPromptCategory(prompt);
+        if (!categories[category]) categories[category] = [];
+        categories[category].push({ prompt, index });
+    });
+
+    const choices = [];
+    const categoryOrder = [
+        'security',
+        'architecture',
+        'quality',
+        'process',
+        'frontend',
+        'backend',
+        'interface',
+        'product',
+        'growth',
+        'mobile',
+        'ui',
+    ];
+
+    categoryOrder.forEach((category) => {
+        if (categories[category]) {
+            choices.push(lib.separator(`\n${category}`));
+            categories[category].forEach(({ prompt, index }) => {
+                const done = progress.completed.includes(prompt);
+                const mark = done ? 'x' : ' ';
+                const name = lib.getPromptName(prompt);
+                choices.push({
+                    name: `[${mark}] ${String(index + 1).padStart(2)}  ${name}`,
+                    value: prompt,
+                });
+            });
+        }
+    });
+
+    const selected = await lib.select({
+        message: action,
+        choices,
+        pageSize: 20,
+    });
+
+    return selected;
+}
+
 const args = process.argv.slice(2);
 const command = args[0];
 const arg = args[1];
 
 (async () => {
-    const runOrder = getRunOrder();
+    const runOrder = lib.getRunOrder();
 
-switch (command) {
+    switch (command) {
         case 'interactive':
         case 'i':
         case 'tui': {
-            const { RedpenTUI } = require('./tui.js');
-            const tui = new RedpenTUI();
+            const { TUI } = require('./tui.js');
+            const tui = new TUI();
             await tui.start();
             break;
         }
@@ -788,7 +477,7 @@ switch (command) {
             if (!arg) {
                 showFile = await interactiveSelect('show');
             } else {
-                showFile = resolvePrompt(arg, runOrder);
+                showFile = lib.resolvePrompt(arg, runOrder);
                 if (!showFile) {
                     console.error(`not found: ${arg}`);
                     process.exit(1);
@@ -802,7 +491,7 @@ switch (command) {
             if (!arg) {
                 copyFile = await interactiveSelect('copy');
             } else {
-                copyFile = resolvePrompt(arg, runOrder);
+                copyFile = lib.resolvePrompt(arg, runOrder);
                 if (!copyFile) {
                     console.error(`not found: ${arg}`);
                     process.exit(1);
@@ -816,7 +505,7 @@ switch (command) {
             if (!arg) {
                 doneFile = await interactiveSelect('done');
             } else {
-                doneFile = resolvePrompt(arg, runOrder);
+                doneFile = lib.resolvePrompt(arg, runOrder);
                 if (!doneFile) {
                     console.error(`not found: ${arg}`);
                     process.exit(1);
@@ -830,7 +519,7 @@ switch (command) {
             if (!arg) {
                 skipFile = await interactiveSelect('skip');
             } else {
-                skipFile = resolvePrompt(arg, runOrder);
+                skipFile = lib.resolvePrompt(arg, runOrder);
                 if (!skipFile) {
                     console.error(`not found: ${arg}`);
                     process.exit(1);
@@ -859,23 +548,21 @@ switch (command) {
             break;
         case '--version':
         case '-v':
-            console.log(getVersion());
+            console.log(lib.getVersion());
             break;
         case 'help':
         case '--help':
         case '-h':
             showHelp();
             break;
-default:
+        default:
             if (command) {
                 console.error(`unknown: ${command}`);
                 showHelp();
             } else {
-                // No command - launch interactive TUI
                 const { TUI } = require('./tui.js');
                 const tui = new TUI();
                 tui.start();
             }
     }
 })();
-

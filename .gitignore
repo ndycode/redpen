@@ -22,3 +22,6 @@ build/
 
 # Test
 coverage/
+
+# Package tarballs
+*.tgz

@@ -1,0 +1,24 @@
+{
+  "root": true,
+  "env": {
+    "node": true,
+    "es2022": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "extends": ["eslint:recommended"],
+  "rules": {
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "no-console": "off",
+    "no-control-regex": "off",
+    "semi": ["error", "always"],
+    "quotes": ["error", "single", { "avoidEscape": true }],
+    "indent": ["error", 4],
+    "comma-dangle": ["error", "only-multiline"],
+    "no-trailing-spaces": "error",
+    "eol-last": ["error", "always"]
+  },
+  "ignorePatterns": ["node_modules/", "tui-src/", "*.tgz"]
+}
