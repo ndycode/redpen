@@ -4,7 +4,7 @@
   "description": "A senior engineer review system in a box. Production-grade prompts for auditing AI-assisted codebases.",
   "main": "index.js",
   "bin": {
-    "redpen": "./bin/cli.js"
+    "redpen": "bin/cli.js"
   },
   "scripts": {
     "test": "vitest run",
@@ -13,8 +13,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "check:prompts": "node scripts/check-prompts.mjs",
+    "verify": "node scripts/check-prompts.mjs",
     "format": "prettier --write .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "release": "node scripts/release.mjs"
   },
   "repository": {
     "type": "git",
@@ -42,6 +44,7 @@
     "bin/",
     "lib/",
     "prompts/",
+    "scripts/",
     "workflow/",
     "index.js"
   ],

@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
 
 const lib = require('../lib');
 
@@ -212,6 +214,7 @@ redpen <command> [name|number]
   check [cats]   CI: fail if incomplete
   report         markdown audit summary
   doctor         validate config
+  verify         validate prompt standard
   completion     output shell completion script
   reset          clear progress
   --version      show version
@@ -232,7 +235,7 @@ function completion() {
     const script = `
 # redpen shell completion
 _redpen() {
-    local commands="init run order next status list show copy done skip undo check report doctor completion reset help"
+    local commands="init run order next status list show copy done skip undo check report doctor verify completion reset help"
     local categories="security quality architecture process frontend interface product growth mobile"
     
     case "\${COMP_WORDS[1]}" in
@@ -388,6 +391,20 @@ function doctor() {
     }
 }
 
+function verify() {
+    const scriptPath = path.join(__dirname, '..', 'scripts', 'check-prompts.mjs');
+    if (!fs.existsSync(scriptPath)) {
+        console.error('prompt check script not found (scripts/check-prompts.mjs)');
+        process.exit(1);
+    }
+
+    try {
+        execSync(`node "${scriptPath}"`, { stdio: 'inherit' });
+    } catch {
+        process.exit(1);
+    }
+}
+
 async function interactiveSelect(action) {
     const progress = lib.getProgress();
     const runOrder = lib.getRunOrder();
@@ -539,6 +556,9 @@ const arg = args[1];
             break;
         case 'doctor':
             doctor();
+            break;
+        case 'verify':
+            verify();
             break;
         case 'completion':
             completion();

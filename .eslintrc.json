@@ -15,7 +15,7 @@
     "no-control-regex": "off",
     "semi": ["error", "always"],
     "quotes": ["error", "single", { "avoidEscape": true }],
-    "indent": ["error", 4],
+    "indent": ["error", 4, { "SwitchCase": 1 }],
     "comma-dangle": ["error", "only-multiline"],
     "no-trailing-spaces": "error",
     "eol-last": ["error", "always"]

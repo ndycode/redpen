@@ -370,16 +370,16 @@ class InitTUI {
         } else {
             const options = this.getCurrentOptions();
 
-            const detected =
-                this.step === INIT_STEPS.PLATFORM
-                    ? this.detectedPlatform
-                    : this.step === INIT_STEPS.FRONTEND
-                      ? this.detectedFrontend
-                      : this.step === INIT_STEPS.BACKEND
-                        ? this.detectedBackend
-                        : this.step === INIT_STEPS.FRAMEWORK
-                          ? this.detectedFramework
-                          : null;
+            let detected = null;
+            if (this.step === INIT_STEPS.PLATFORM) {
+                detected = this.detectedPlatform;
+            } else if (this.step === INIT_STEPS.FRONTEND) {
+                detected = this.detectedFrontend;
+            } else if (this.step === INIT_STEPS.BACKEND) {
+                detected = this.detectedBackend;
+            } else if (this.step === INIT_STEPS.FRAMEWORK) {
+                detected = this.detectedFramework;
+            }
 
             if (detected && detected !== 'none') {
                 out.push(pad(`  ${fg(C.dim)}detected: ${detected}${term.reset}`, W));
@@ -715,11 +715,12 @@ class TUI {
         const leftArr = this.idx > 0 ? `${fg(C.primary)}◀${term.reset}` : `${fg(C.dim)}◀${term.reset}`;
         const rightArr = this.idx < total - 1 ? `${fg(C.primary)}▶${term.reset}` : `${fg(C.dim)}▶${term.reset}`;
         const name = lib.getPromptName(item);
-        const statusIcon = isDone
-            ? `${fg(C.green)}●${term.reset}`
-            : isSkipped
-              ? `${fg(C.yellow)}○${term.reset}`
-              : `${fg(C.muted)}○${term.reset}`;
+        let statusIcon = `${fg(C.muted)}○${term.reset}`;
+        if (isDone) {
+            statusIcon = `${fg(C.green)}●${term.reset}`;
+        } else if (isSkipped) {
+            statusIcon = `${fg(C.yellow)}○${term.reset}`;
+        }
 
         out.push(
             pad(

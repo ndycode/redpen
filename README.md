@@ -86,6 +86,7 @@ redpen init
 | `redpen reset` | Clear progress |
 | `redpen check [cats]` | CI mode - exit 1 if incomplete |
 | `redpen report` | Markdown summary |
+| `redpen verify` | Validate prompt standard |
 
 ## Prompts
 
@@ -195,6 +196,18 @@ Detected values are pre-selected in the init wizard.
 ```bash
 # Add to your shell profile
 eval "$(redpen completion)"
+```
+
+## Development
+
+Release (maintainers):
+
+```bash
+# Generate notes from template
+node scripts/release.mjs <version>
+
+# Or provide explicit notes
+node scripts/release.mjs <version> --notes path/to/notes.md
 ```
 
 ## Why This Exists
