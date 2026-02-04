@@ -1,8 +1,20 @@
+PURPOSE
+Define the canonical execution order for mobile prompts.
+
+USAGE
+- Use this order when running a full mobile review.
+- Do not skip Phase 1-3 before release.
+
+MAINTENANCE RULES
+- Update when prompts are added/removed/renamed.
+- Keep phases mutually exclusive and ordered.
+- Keep the classification table in sync with this list.
+
 MOBILE PROMPT CANONICAL RUN ORDER
 ==================================
 
 Order follows elite mobile team discipline:
-  correctness → performance → testing → UI → UX → failure → observability → health
+  correctness -> performance -> testing -> UI -> UX -> failure -> observability -> health
 
 ================================================================================
 PHASE 1: SYSTEM SAFETY & CORRECTNESS (Category A)

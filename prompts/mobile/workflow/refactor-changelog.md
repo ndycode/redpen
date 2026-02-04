@@ -1,5 +1,11 @@
 # Mobile Prompt Refactor Changelog
 
+Purpose: Track prompt structure changes and rationale over time.
+
+Maintenance rules:
+- Add a dated entry for every structural prompt change.
+- Keep this changelog aligned with run-order.txt and library-map.txt.
+
 2026-01-02
 
 Standardized 23 prompts. Added ROLE, INTENT, SCOPE, EXECUTION ORDER, ENFORCEMENT, RED FLAGS, OUTPUT FORMAT, DONE CONDITION to each.

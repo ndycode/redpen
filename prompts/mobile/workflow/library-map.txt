@@ -1,3 +1,14 @@
+PURPOSE
+Catalog mobile prompts by category, purpose, and overlap.
+
+USAGE
+- Use as a maintenance index when prompts change.
+- Use to resolve overlaps and avoid duplicate audits.
+
+MAINTENANCE RULES
+- Keep categories current with run-order.txt.
+- Update overlap notes when prompt scopes change.
+
 PROMPT LIBRARY MAP
 ==================
 
