@@ -1,6 +1,6 @@
 {
   "name": "redpen",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "A senior engineer review system in a box. Production-grade prompts for auditing AI-assisted codebases.",
   "main": "index.js",
   "bin": {
