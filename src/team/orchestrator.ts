@@ -21,7 +21,7 @@ export interface OrchestrationState {
     currentFixAttempt: number;
 }
 
-const TERMINAL_PHASES: readonly TerminalPhase[] = ['complete', 'failed', 'cancelled'];
+export const TERMINAL_PHASES: readonly TerminalPhase[] = ['complete', 'failed', 'cancelled'];
 
 const TRANSITIONS: Record<OrchestratorPhase, ReadonlyArray<Phase>> = {
     plan: ['prd'],
@@ -129,4 +129,19 @@ export function getPhaseAgents(phase: Phase): string[] {
 
 export function getPhaseInstructions(phase: Phase): string {
     return PHASE_INSTRUCTION_MAP[phase];
+}
+
+export function getAllowedTransitions(phase: Phase): Phase[] {
+    if (isTerminalPhase(phase)) {
+        return [];
+    }
+    return [...TRANSITIONS[phase]];
+}
+
+export function hasRemainingFixAttempts(state: OrchestrationState): boolean {
+    return state.currentFixAttempt < state.maxFixAttempts;
+}
+
+export function getPhaseTimeline(state: OrchestrationState): PhaseTransition[] {
+    return [...state.phaseTransitions];
 }
