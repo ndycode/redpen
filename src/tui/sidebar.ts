@@ -119,7 +119,9 @@ export function renderSidebar(state: SidebarState): string[] {
             continue;
         }
 
-        const item = items[itemIdx]!;
+        const item = items[itemIdx];
+        if (!item) continue;
+
         const isSelected = state.selectedIndex === itemIdx;
         const isActive = isItemActive(item, state.activeFilter, state.currentPromptPath);
 
