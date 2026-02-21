@@ -115,7 +115,7 @@ export function renderSidebar(state: SidebarState): string[] {
     for (let i = 0; i < state.height; i++) {
         const itemIdx = startIdx + i;
         if (itemIdx >= items.length) {
-            lines.push(' '.repeat(25) + `${fg(C.border)}│${term.reset}`);
+            lines.push(`${fg(C.border)}│${term.reset}` + ' '.repeat(25));
             continue;
         }
 
@@ -175,7 +175,7 @@ export function renderSidebar(state: SidebarState): string[] {
         }
 
         const borderChar = `${fg(C.border)}│${term.reset}`;
-        lines.push(lineContent + borderChar);
+        lines.push(borderChar + lineContent);
     }
 
     return lines;
