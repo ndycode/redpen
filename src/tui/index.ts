@@ -796,16 +796,19 @@ export class TUI {
     renderNormal() {
         this.W = process.stdout.columns || 80;
         this.H = process.stdout.rows || 24;
-        this.sidebarState.height = this.H - 5;
+        
+        const contentH = Math.max(1, this.H - 2);
+        this.sidebarState.height = contentH;
+        
         const currentItems = this.getFilteredItems();
         if (this.idx >= currentItems.length) this.idx = Math.max(0, currentItems.length - 1);
         this.sidebarState.currentPromptPath = currentItems[this.idx] || null;
 
-        const W = this.W >= 80 ? this.W - 26 : this.W;
-        const H = this.H;
+        const W_left = this.W >= 80 ? this.W - 26 : this.W;
+        
         const progress = getProgress();
         const total = currentItems.length;
-        const done = currentItems.filter(item => progress.completed.includes(item)).length;
+        const done = currentItems.filter((item) => progress.completed.includes(item)).length;
         const item = currentItems[this.idx] || '';
 
         const isDone = progress.completed.includes(item);
@@ -824,7 +827,7 @@ export class TUI {
         const ver = `${fg(C.dim)}v${getVersion()}${term.reset}`;
         const branch = getBranch();
         const branchStr = branch ? `  ${fg(C.purple)}${branch}${term.reset}` : '';
-        out.push(pad(`  ${title} ${ver}${branchStr}`, W));
+        out.push(pad(`  ${title} ${ver}${branchStr}`, W_left));
         out.push('');
 
         const pos = `${this.idx + 1}/${total}`;
@@ -841,28 +844,28 @@ export class TUI {
         out.push(
             pad(
                 `  ${leftArr}  ${fg(C.muted)}${pos}${term.reset}  ${statusIcon} ${fg(C.text)}${term.bold}${name}${term.reset}  ${rightArr}`,
-                W
+                W_left
             )
         );
         out.push('');
 
-        const barW = Math.max(0, Math.min(60, W - 20));
+        const barW = Math.max(0, Math.min(60, W_left - 20));
         const filled = total > 0 ? Math.max(0, Math.min(barW, Math.round((done / total) * barW))) : 0;
         const pct = total > 0 ? Math.round((done / total) * 100) : 0;
         const bar = `${fg(C.primary)}${'━'.repeat(filled)}${fg(C.border)}${'━'.repeat(barW - filled)}${term.reset}`;
-        out.push(pad(`  ${bar}  ${fg(C.muted)}${done}/${total} (${pct}%)${term.reset}`, W));
+        out.push(pad(`  ${bar}  ${fg(C.muted)}${done}/${total} (${pct}%)${term.reset}`, W_left));
         out.push('');
 
-        out.push(pad(`  ${fg(C.border)}${'─'.repeat(W - 4)}${term.reset}`, W));
+        out.push(pad(`  ${fg(C.border)}${'─'.repeat(Math.max(0, W_left - 4))}${term.reset}`, W_left));
         out.push('');
 
-        const previewH = H - 14;
+        const previewH = Math.max(0, contentH - out.length);
         const previewLines = lines.slice(0, previewH);
 
         for (let i = 0; i < previewH; i++) {
             let line = previewLines[i] || '';
             line = line.replace(/\r/g, '');
-            if (line.length > W - 6) line = line.slice(0, W - 9) + '...';
+            if (line.length > W_left - 6) line = line.slice(0, W_left - 9) + '...';
             if (line.match(/^#+\s/)) {
                 line = `${fg(C.purple)}${term.bold}${line}${term.reset}`;
             } else if (line.match(/^[A-Z][A-Z\s]+$/)) {
@@ -872,47 +875,83 @@ export class TUI {
             } else {
                 line = `${fg(C.muted)}${line}${term.reset}`;
             }
-            out.push(pad(`  ${line}`, W));
+            out.push(pad(`  ${line}`, W_left));
         }
 
-        while (out.length < H - 3) out.push(pad('', W));
+        while (out.length < contentH) out.push(pad('', W_left));
 
         if (this.toast) {
-            const toastLine = H - 5;
+            const toastLine = contentH - 2;
             if (out[toastLine]) {
                 const toastContent = ` ${fg(C.green)}✓${term.reset}${bg(C.element)} ${fg(C.text)}${this.toast} ${term.reset}`;
                 const toastLen = this.toast.length + 5;
                 const rightPad = 4;
-                const leftPad = W - toastLen - rightPad;
+                const leftPad = W_left - toastLen - rightPad;
                 out[toastLine] =
-                    ' '.repeat(Math.max(0, leftPad)) + `${bg(C.element)}${toastContent}` + ' '.repeat(rightPad);
+                    ' '.repeat(Math.max(0, leftPad)) + `${bg(C.element)}${toastContent}` + ' '.repeat(Math.max(0, rightPad));
             }
         }
 
-        out.push(pad(`  ${fg(C.border)}${'─'.repeat(W - 4)}${term.reset}`, W));
-        const keys = [
-            `${fg(C.primary)}r${fg(C.muted)} run`,
-            `${fg(C.primary)}c${fg(C.muted)} copy`,
-            `${fg(C.primary)}s${fg(C.muted)} skip`,
-            `${fg(C.primary)}/${fg(C.muted)} search`,
-            `${fg(C.primary)}?${fg(C.muted)} help`,
-        ].join(`  ${fg(C.dim)}│${term.reset}  `);
-        out.push(pad(`  ${keys}${term.reset}`, W));
-        out.push('');
         if (this.W >= 80) {
             const sidebarLines = renderSidebar(this.sidebarState);
-            for (let i = 0; i < H; i++) {
-                const sl = sidebarLines[i] || ' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`;
-                const lineBase = out[i] || ' '.repeat(W);
+            for (let i = 0; i < contentH; i++) {
+                const sl = sidebarLines[i] || `\x1b[38;2;50;50;50m│\x1b[0m`;
+                const lineBase = out[i] || ' '.repeat(W_left);
                 out[i] = lineBase + sl;
             }
         }
-        process.stdout.write(term.home + out.slice(0, H).join('\n'));
+
+        const finalOut = out.slice(0, contentH);
+        
+        finalOut.push(pad(`${fg(C.border)}${'─'.repeat(Math.max(0, this.W))}${term.reset}`, this.W));
+
+        let keysArr = [];
+        if (this.sidebarState.focused && this.W >= 80) {
+            keysArr = [
+                `${fg(C.primary)}↑↓${fg(C.muted)} navigate`,
+                `${fg(C.primary)}Enter${fg(C.muted)} select`,
+                `${fg(C.primary)}Space${fg(C.muted)} toggle`,
+                `${fg(C.primary)}Tab${fg(C.muted)} back to prompts`,
+                `${fg(C.primary)}q${fg(C.muted)} quit`
+            ];
+        } else {
+            keysArr = [
+                `${fg(C.primary)}←→${fg(C.muted)} navigate`,
+                `${fg(C.primary)}Tab${fg(C.muted)} categories`,
+                `${fg(C.primary)}r${fg(C.muted)} run`,
+                `${fg(C.primary)}c${fg(C.muted)} copy`,
+                `${fg(C.primary)}d${fg(C.muted)} done`,
+                `${fg(C.primary)}s${fg(C.muted)} skip`,
+                `${fg(C.primary)}n${fg(C.muted)} next`,
+                `${fg(C.primary)}/${fg(C.muted)} search`,
+                `${fg(C.primary)}?${fg(C.muted)} help`
+            ];
+        }
+        
+        let keysStr = '  ' + keysArr.join(`  ${fg(C.dim)}│${term.reset}  `);
+        if (keysStr.replace(/\x1b\[[0-9;]*m/g, '').length > this.W) {
+            keysArr = [
+                `${fg(C.primary)}←→${fg(C.muted)} nav`, 
+                `${fg(C.primary)}Tab${fg(C.muted)} cats`, 
+                `${fg(C.primary)}r${fg(C.muted)} run`, 
+                `${fg(C.primary)}c${fg(C.muted)} copy`,
+                `${fg(C.primary)}d${fg(C.muted)} done`
+            ];
+            keysStr = '  ' + keysArr.join(`  ${fg(C.dim)}│${term.reset}  `);
+        }
+        finalOut.push(pad(keysStr, this.W - 1));
+
+        process.stdout.write(term.home + finalOut.join('\n'));
     }
 
     renderSearch() {
-        const W = this.W >= 80 ? this.W - 26 : this.W;
-        const H = this.H;
+        this.W = process.stdout.columns || 80;
+        this.H = process.stdout.rows || 24;
+        
+        const contentH = Math.max(1, this.H - 2);
+        this.sidebarState.height = contentH;
+        const W_left = this.W >= 80 ? this.W - 26 : this.W;
+        
         const progress = getProgress();
 
         const out = [];
@@ -923,23 +962,23 @@ export class TUI {
 
         out.push('');
         const title = `${fg(C.primary)}${term.bold}red${fg(C.text)}pen${term.reset}`;
-        out.push(pad(`  ${title}  ${fg(C.yellow)}Search${term.reset}`, W));
+        out.push(pad(`  ${title}  ${fg(C.yellow)}Search${term.reset}`, W_left));
         out.push('');
 
         const searchBox = `  ${fg(C.primary)}/${term.reset} ${fg(C.text)}${this.searchQuery}${fg(C.primary)}▌${term.reset}`;
-        out.push(pad(searchBox, W));
+        out.push(pad(searchBox, W_left));
         out.push('');
-        out.push(pad(`  ${fg(C.border)}${'─'.repeat(W - 4)}${term.reset}`, W));
+        out.push(pad(`  ${fg(C.border)}${'─'.repeat(Math.max(0, W_left - 4))}${term.reset}`, W_left));
         out.push('');
 
-        const maxResults = H - 10;
+        const maxResults = contentH - 10;
         const startIdx = Math.max(0, this.filteredIdx - Math.floor(maxResults / 2));
         const visibleItems = this.filteredItems.slice(startIdx, startIdx + maxResults);
 
         if (this.filteredItems.length === 0) {
-            out.push(pad(`  ${fg(C.muted)}No matches${term.reset}`, W));
+            out.push(pad(`  ${fg(C.muted)}No matches${term.reset}`, W_left));
         } else {
-            out.push(pad(`  ${fg(C.dim)}${this.filteredItems.length} result(s)${term.reset}`, W));
+            out.push(pad(`  ${fg(C.dim)}${this.filteredItems.length} result(s)${term.reset}`, W_left));
             out.push('');
 
             visibleItems.forEach((item, i) => {
@@ -952,34 +991,42 @@ export class TUI {
                 const label = isSelected ? `${fg(C.primary)}${name}${term.reset}` : `${fg(C.text)}${name}${term.reset}`;
                 const bgStyle = isSelected ? bg(C.selected) : '';
 
-                out.push(pad(`${bgStyle}  ${prefix} ${icon} ${label}${term.reset}`, W));
+                out.push(pad(`${bgStyle}  ${prefix} ${icon} ${label}${term.reset}`, W_left));
             });
         }
 
-        while (out.length < H - 3) out.push(pad('', W));
+        while (out.length < contentH) out.push(pad('', W_left));
 
-        out.push(pad(`  ${fg(C.border)}${'─'.repeat(W - 4)}${term.reset}`, W));
-        const keys = [
-            `${fg(C.primary)}↑↓${fg(C.muted)} navigate`,
-            `${fg(C.primary)}Enter${fg(C.muted)} select`,
-            `${fg(C.primary)}Esc${fg(C.muted)} cancel`,
-        ].join(`  ${fg(C.dim)}│${term.reset}  `);
-        out.push(pad(`  ${keys}${term.reset}`, W));
-        out.push('');
         if (this.W >= 80) {
             const sidebarLines = renderSidebar(this.sidebarState);
-            for (let i = 0; i < H; i++) {
-                const sl = sidebarLines[i] || ' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`;
-                const lineBase = out[i] || ' '.repeat(W);
+            for (let i = 0; i < contentH; i++) {
+                const sl = sidebarLines[i] || `\x1b[38;2;50;50;50m│\x1b[0m`;
+                const lineBase = out[i] || ' '.repeat(W_left);
                 out[i] = lineBase + sl;
             }
         }
-        process.stdout.write(term.home + out.slice(0, H).join('\n'));
+
+        const finalOut = out.slice(0, contentH);
+        finalOut.push(pad(`${fg(C.border)}${'─'.repeat(Math.max(0, this.W))}${term.reset}`, this.W));
+        
+        const keysArr = [
+            `${fg(C.primary)}↑↓${fg(C.muted)} navigate`,
+            `${fg(C.primary)}Enter${fg(C.muted)} select`,
+            `${fg(C.primary)}Esc${fg(C.muted)} cancel`,
+        ];
+        const keysStr = '  ' + keysArr.join(`  ${fg(C.dim)}│${term.reset}  `);
+        finalOut.push(pad(keysStr, this.W - 1));
+
+        process.stdout.write(term.home + finalOut.join('\n'));
     }
 
     renderHelp() {
-        const W = this.W >= 80 ? this.W - 26 : this.W;
-        const H = this.H;
+        this.W = process.stdout.columns || 80;
+        this.H = process.stdout.rows || 24;
+        
+        const contentH = Math.max(1, this.H - 2);
+        this.sidebarState.height = contentH;
+        const W_left = this.W >= 80 ? this.W - 26 : this.W;
 
         const out = [];
         const pad = (s, w) => {
@@ -994,9 +1041,9 @@ export class TUI {
         };
 
         out.push('');
-        out.push(pad(center(`${fg(C.primary)}${term.bold}Keyboard Shortcuts${term.reset}`, W), W));
+        out.push(pad(center(`${fg(C.primary)}${term.bold}Keyboard Shortcuts${term.reset}`, W_left), W_left));
         out.push('');
-        out.push(pad(`  ${fg(C.border)}${'─'.repeat(W - 4)}${term.reset}`, W));
+        out.push(pad(`  ${fg(C.border)}${'─'.repeat(Math.max(0, W_left - 4))}${term.reset}`, W_left));
         out.push('');
 
         const shortcuts = [
@@ -1020,27 +1067,34 @@ export class TUI {
 
         shortcuts.forEach(([key, desc]) => {
             if (!key && !desc) {
-                out.push(pad('', W));
+                out.push(pad('', W_left));
             } else if (!desc) {
-                out.push(pad(`  ${fg(C.yellow)}${term.bold}${key}${term.reset}`, W));
+                out.push(pad(`  ${fg(C.yellow)}${term.bold}${key}${term.reset}`, W_left));
             } else {
-                out.push(pad(`  ${fg(C.primary)}${key.padEnd(12)}${term.reset}${fg(C.text)}${desc}${term.reset}`, W));
+                out.push(pad(`  ${fg(C.primary)}${key.padEnd(12)}${term.reset}${fg(C.text)}${desc}${term.reset}`, W_left));
             }
         });
 
-        while (out.length < H - 3) out.push(pad('', W));
+        while (out.length < contentH) out.push(pad('', W_left));
 
-        out.push(pad(`  ${fg(C.border)}${'─'.repeat(W - 4)}${term.reset}`, W));
-        out.push(pad(`  ${fg(C.muted)}Press any key to close${term.reset}`, W));
-        out.push('');
         if (this.W >= 80) {
             const sidebarLines = renderSidebar(this.sidebarState);
-            for (let i = 0; i < H; i++) {
-                const sl = sidebarLines[i] || ' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`;
-                const lineBase = out[i] || ' '.repeat(W);
+            for (let i = 0; i < contentH; i++) {
+                const sl = sidebarLines[i] || `\x1b[38;2;50;50;50m│\x1b[0m`;
+                const lineBase = out[i] || ' '.repeat(W_left);
                 out[i] = lineBase + sl;
             }
         }
-        process.stdout.write(term.home + out.slice(0, H).join('\n'));
+
+        const finalOut = out.slice(0, contentH);
+        finalOut.push(pad(`${fg(C.border)}${'─'.repeat(Math.max(0, this.W))}${term.reset}`, this.W));
+        
+        const keysArr = [
+            `${fg(C.primary)}Esc${fg(C.muted)} close`,
+        ];
+        const keysStr = '  ' + keysArr.join(`  ${fg(C.dim)}│${term.reset}  `);
+        finalOut.push(pad(keysStr, this.W - 1));
+
+        process.stdout.write(term.home + finalOut.join('\n'));
     }
 }
