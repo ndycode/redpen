@@ -4,13 +4,18 @@
     "node": true,
     "es2022": true
   },
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2022,
     "sourceType": "module"
   },
-  "extends": ["eslint:recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "rules": {
-    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "no-console": "off",
     "no-control-regex": "off",
     "semi": ["error", "always"],
@@ -20,5 +25,6 @@
     "no-trailing-spaces": "error",
     "eol-last": ["error", "always"]
   },
-  "ignorePatterns": ["node_modules/", "tui-src/", "*.tgz"]
+  "ignorePatterns": ["node_modules/", "tui-src/", "*.tgz"],
+  "plugins": ["@typescript-eslint"]
 }
