@@ -5,78 +5,49 @@
       "id": "core/planning",
       "name": "Planning",
       "icon": "📋",
-      "description": "Feature breakdown, PRDs, sprint planning",
-      "sortOrder": 1
+      "description": "Feature breakdown, sprint planning"
     },
     {
       "id": "core/design",
       "name": "Design",
       "icon": "📐",
-      "description": "System design, API contracts, UI/UX architecture",
-      "sortOrder": 2
+      "description": "System design, API contracts"
     },
     {
       "id": "core/architecture",
       "name": "Architecture",
       "icon": "🏗️",
-      "description": "State management, scalability, patterns",
-      "sortOrder": 3
+      "description": "State management, patterns"
     },
     {
       "id": "core/security",
       "name": "Security",
       "icon": "🔒",
-      "description": "OWASP, Auth flows, cryptography",
-      "sortOrder": 4
+      "description": "OWASP, Auth flows, cryptography"
     },
     {
       "id": "core/refactoring",
       "name": "Refactoring",
       "icon": "♻️",
-      "description": "SOLID, DRY, complexity reduction",
-      "sortOrder": 5
+      "description": "SOLID, DRY, complexity reduction"
     },
     {
       "id": "core/debugging",
       "name": "Debugging",
       "icon": "🐛",
-      "description": "Root cause analysis, memory leaks",
-      "sortOrder": 6
+      "description": "RCA, memory leaks, race conditions"
     },
     {
       "id": "core/quality",
       "name": "Quality",
       "icon": "✨",
-      "description": "Code review, testing, error handling",
-      "sortOrder": 7
-    },
-    {
-      "id": "web/frontend",
-      "name": "Frontend",
-      "icon": "🎨",
-      "description": "React, Vue, styling, accessibility",
-      "sortOrder": 8
-    },
-    {
-      "id": "web/backend",
-      "name": "Backend",
-      "icon": "⚙️",
-      "description": "Databases, API routes, middleware",
-      "sortOrder": 9
-    },
-    {
-      "id": "mobile",
-      "name": "Mobile",
-      "icon": "📱",
-      "description": "React Native, Flutter",
-      "sortOrder": 10
+      "description": "Code review, testing, error handling"
     },
     {
       "id": "devops",
       "name": "DevOps",
       "icon": "🚀",
-      "description": "CI/CD, Docker",
-      "sortOrder": 11
+      "description": "CI/CD, Docker, deployment pipelines"
     }
   ]
 }
