@@ -804,8 +804,8 @@ export class TUI {
         const W = this.W >= 80 ? this.W - 26 : this.W;
         const H = this.H;
         const progress = getProgress();
-        const done = progress.completed.length;
         const total = currentItems.length;
+        const done = currentItems.filter(item => progress.completed.includes(item)).length;
         const item = currentItems[this.idx] || '';
 
         const isDone = progress.completed.includes(item);
@@ -847,7 +847,7 @@ export class TUI {
         out.push('');
 
         const barW = Math.max(0, Math.min(60, W - 20));
-        const filled = total > 0 ? Math.round((done / total) * barW) : 0;
+        const filled = total > 0 ? Math.max(0, Math.min(barW, Math.round((done / total) * barW))) : 0;
         const pct = total > 0 ? Math.round((done / total) * 100) : 0;
         const bar = `${fg(C.primary)}${'━'.repeat(filled)}${fg(C.border)}${'━'.repeat(barW - filled)}${term.reset}`;
         out.push(pad(`  ${bar}  ${fg(C.muted)}${done}/${total} (${pct}%)${term.reset}`, W));
