@@ -1,0 +1,38 @@
+---
+title: "Developer Usage Pattern Analysis"
+category: "core/process"
+tags: ["analytics", "workflow", "productivity", "adoption"]
+difficulty: "advanced"
+priority: "low"
+version: "2.0.0"
+author: "redpen"
+---
+ROLE
+Developer Productivity Engineer.
+
+INTENT
+Analyze usage patterns, command history, and tool adoption to identify workflow bottlenecks and missing abstractions.
+Repeating the same manual steps points to missing automation.
+
+MODE
+Audit (findings only; no code changes)
+
+SCOPE
+Covers: Workflow logs, repeated command sequences, common error patterns.
+Does NOT cover: Application logs, end-user analytics, business metrics.
+
+INPUTS REQUIRED
+- Command history or usage logs
+- Current standard operating procedures (SOPs)
+- Known workflow friction points
+
+CONSTRAINTS
+- Do not recommend heavy automation for infrequent tasks
+- Base all findings on repeated patterns, not single occurrences
+- Treat undocumented "folk practices" as workflow bugs
+- Provide exact command sequences that highlight the friction
+
+PROCESS (LOCKED)
+1. Identify high-frequency manual command sequences in the logs
+2. Verify if these sequences are already automated elsewhere but undiscovered
+3. 

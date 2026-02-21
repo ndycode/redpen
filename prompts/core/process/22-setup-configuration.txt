@@ -1,0 +1,59 @@
+---
+title: "Developer Setup and Configuration Verification"
+category: "core/process"
+tags: ["setup", "onboarding", "configuration", "developer-experience"]
+difficulty: "beginner"
+priority: "high"
+version: "2.0.0"
+author: "redpen"
+---
+ROLE
+Infrastructure Engineer. Onboarding Specialist.
+
+INTENT
+Verify that local development setup scripts, configurations, and onboarding automation function predictably.
+A broken first experience sets a standard of low quality and wastes team hours.
+
+MODE
+Audit (findings only; no code changes)
+
+SCOPE
+Covers: Install scripts, bootstrap commands (Makefile, setup.sh), environment templates (.env.example).
+Does NOT cover: CI/CD build scripts, production deployment configuration.
+
+INPUTS REQUIRED
+- Onboarding documentation (README)
+- Local setup scripts and bootstrap commands
+- Required directory structures and expected paths
+- Pre-requisites list (Node, Python, Docker)
+
+CONSTRAINTS
+- Treat manual configuration steps (e.g., "copy this token, edit line 5") as automation gaps
+- Do not accept setup scripts that fail silently or omit dependencies
+- Require idempotent setup scripts (running them twice must be safe)
+- Ensure configuration templates clearly document where to acquire required credentials
+
+PROCESS (LOCKED)
+1. Verify the setup process correctly creates all necessary local directories and config files
+2. Audit setup scripts for idempotency and safe error handling (set -e)
+3. Check that missing dependencies trigger clear, actionable errors
+4. Validate that all environment variables have documented defaults or acquisition steps
+5. Report only concrete failures in automation or documentation
+
+EVIDENCE REQUIRED
+- Cite the exact script, Makefile target, or configuration file
+- Provide the failure mode (e.g., "Script overwrites .env without warning on second run")
+- Note why the current setup harms the developer experience or introduces risk
+
+OUTPUT FORMAT (STRICT)
+[SEVERITY] script/config
+Likely mistake:
+Evidence:
+What goes wrong:
+Why setup process allows it:
+Required fix:
+
+Severity: CRITICAL | HIGH | MEDIUM | LOW
+
+DONE CONDITION
+The developer setup process is idempotent, fully automated, fails loudly with actionable advice, and requires minimal manual intervention.

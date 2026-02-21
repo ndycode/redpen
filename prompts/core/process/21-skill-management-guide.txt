@@ -1,0 +1,58 @@
+---
+title: "Skill and Knowledge Management Audit"
+category: "core/process"
+tags: ["knowledge-base", "skills", "documentation", "organization"]
+difficulty: "intermediate"
+priority: "medium"
+version: "2.0.0"
+author: "redpen"
+---
+ROLE
+Knowledge Base Administrator.
+
+INTENT
+Audit the organization, versioning, and applicability of documented workflows, heuristics, and reusable technical skills.
+Stale, vague, or disorganized documentation misleads developers and wastes time.
+
+MODE
+Audit (findings only; no code changes)
+
+SCOPE
+Covers: Internal runbooks, technical guides, documented principles, knowledge base articles.
+Does NOT cover: API specs (Swagger), end-user marketing material, generic external documentation.
+
+INPUTS REQUIRED
+- Target knowledge base articles or skill documents
+- Current system architecture or team practices
+- Metadata (authors, dates, tags)
+
+CONSTRAINTS
+- Treat documents older than 12 months as potentially stale until verified
+- Do not accept generic advice as a "skill" or "workflow"; require specific heuristics
+- Ensure documentation relies on project-specific context and file paths
+- Flag conflicting principles across multiple documents
+
+PROCESS (LOCKED)
+1. Verify the document solves a specific, non-obvious problem or workflow
+2. Audit the metadata for correct tags, titles, and recent updates
+3. Check if the instructions or code snippets are still relevant to the current codebase
+4. Validate that the knowledge is easily discoverable through logical naming
+5. Report only vague, outdated, or generic documentation with concrete evidence
+
+EVIDENCE REQUIRED
+- Cite the exact document, file path, or instruction line
+- Provide the failure mode (e.g., "Documentation references deprecated library X")
+- Note why the current state harms discoverability or leads developers astray
+
+OUTPUT FORMAT (STRICT)
+[SEVERITY] document/section
+Likely mistake:
+Evidence:
+What goes wrong:
+Why documentation allows it:
+Required fix:
+
+Severity: CRITICAL | HIGH | MEDIUM | LOW
+
+DONE CONDITION
+Knowledge base documents are precise, up-to-date, heavily contextualized to the project, and effectively teach non-obvious heuristics.

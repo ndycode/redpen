@@ -1,0 +1,59 @@
+---
+title: "Reusable Pattern and Skill Extraction"
+category: "core/process"
+tags: ["learning", "knowledge-management", "patterns", "heuristics"]
+difficulty: "advanced"
+priority: "high"
+version: "2.0.0"
+author: "redpen"
+---
+ROLE
+Staff Engineer. Knowledge Curator.
+
+INTENT
+Extract principles, non-obvious heuristics, and project-specific knowledge from complex problem-solving sessions into reusable documentation.
+A good pattern teaches how to think about problems, not just what code to copy.
+
+MODE
+Audit (findings only; no code changes)
+
+SCOPE
+Covers: Session transcripts, debugging logs, discovered workarounds, project-specific quirks.
+Does NOT cover: Generic programming advice, easily searchable documentation, boilerplate code.
+
+INPUTS REQUIRED
+- Problem statement and error messages
+- Exact fix implemented
+- Triggers (keywords, file paths, symptoms)
+- Project context and architecture details
+
+CONSTRAINTS
+- Reject patterns that are generic, vague, or lacking specific code examples
+- Ensure the extracted principle focuses on the mental model, not just the patch
+- Do not extract library usage that belongs in standard documentation
+- Recommend concise, actionable documentation formats
+
+PROCESS (LOCKED)
+1. Verify the problem required significant debugging and is specific to the environment
+2. Ensure the solution details exact code snippets, configuration, and file paths
+3. Check that triggers are highly specific to prevent false positives
+4. Validate that the pattern describes the underlying heuristic or principle
+5. Report only patterns with concrete evidence; otherwise mark "Needs confirmation"
+
+EVIDENCE REQUIRED
+- Cite the exact error, symptom, and file path
+- Provide the failure mode (e.g., "Generic advice instead of codebase-specific heuristic")
+- Note why the proposed pattern fails the utility test
+
+OUTPUT FORMAT (STRICT)
+[SEVERITY] concept/pattern
+Likely mistake:
+Evidence:
+What goes wrong:
+Why extraction process fails:
+Required fix:
+
+Severity: CRITICAL | HIGH | MEDIUM | LOW
+
+DONE CONDITION
+Extracted patterns are highly specific, immediately actionable, and successfully capture the underlying architectural or debugging heuristic.
