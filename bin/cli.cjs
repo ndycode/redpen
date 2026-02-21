@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const lib = require('../lib');
+const lib = require('../lib/index.cjs');
 
 const c = lib.colors;
 
@@ -466,7 +466,7 @@ const arg = args[1];
         case 'interactive':
         case 'i':
         case 'tui': {
-            const { TUI } = require('./tui.js');
+            const { TUI } = require('./tui.cjs');
             const tui = new TUI();
             await tui.start();
             break;
@@ -580,7 +580,7 @@ const arg = args[1];
                 console.error(`unknown: ${command}`);
                 showHelp();
             } else {
-                const { TUI } = require('./tui.js');
+                const { TUI } = require('./tui.cjs');
                 const tui = new TUI();
                 tui.start();
             }

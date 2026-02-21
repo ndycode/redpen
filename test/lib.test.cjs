@@ -1,10 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
+// globals: true in vitest.config — describe/it/expect/vi available globally
+// vi.mock must be top-level (vitest hoists it)
 
 vi.mock('child_process', () => ({
     execSync: vi.fn(() => 'https://github.com/test/repo.git\n'),
 }));
 
-const lib = require('../lib');
+const lib = require('../lib/index.cjs');
 
 describe('config', () => {
     describe('getConfigDir', () => {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const lib = require('../lib');
+const lib = require('../lib/index.cjs');
 
 const ESC = '\x1b';
 const CSI = `${ESC}[`;
