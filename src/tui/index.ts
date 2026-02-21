@@ -598,7 +598,7 @@ export class TUI {
     inputNormal(s) {
         if (s === '\t') {
             this.sidebarState = handleSidebarKey('Tab', this.sidebarState);
-            this.idx = 0;
+
             return;
         }
 
