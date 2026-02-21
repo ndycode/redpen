@@ -139,12 +139,16 @@ export function buildRunOrder(config: typeof DEFAULTS): string[] {
         prompts.push(...scanDir(path.join(PROMPTS_DIR, 'core', category)));
     }
 
+    prompts.push(...scanDirRecursive(path.join(PROMPTS_DIR, 'ai')));
+    prompts.push(...scanDirRecursive(path.join(PROMPTS_DIR, 'devops')));
+
     if (config.platform === 'mobile') {
         prompts.push(...scanDirRecursive(path.join(PROMPTS_DIR, 'mobile', 'core')));
         if (config.framework && config.framework !== 'none') {
             prompts.push(...scanDirRecursive(path.join(PROMPTS_DIR, 'mobile', config.framework)));
         }
     } else {
+        prompts.push(...scanDir(path.join(PROMPTS_DIR, 'web', 'frontend')));
         if (config.frontend && config.frontend !== 'none') {
             prompts.push(...scanDir(path.join(PROMPTS_DIR, 'web', 'frontend', config.frontend)));
             prompts.push(...scanDir(path.join(PROMPTS_DIR, 'web', 'interface')));
