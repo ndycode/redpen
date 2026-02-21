@@ -2,6 +2,7 @@ export interface CategoryData {
     id: string;
     name: string;
     subcategories: string[];
+    icon: string;
     completed: number;
     total: number;
 }
@@ -46,6 +47,8 @@ export const C = {
     primary: [227, 70, 113] as const,
     green: [63, 162, 102] as const,
     yellow: [241, 180, 103] as const,
+    element: [38, 38, 38] as const,
+    primaryBr: [252, 107, 131] as const,
 };
 
 export const fg = (c: readonly [number, number, number]) => term.fg(c[0], c[1], c[2]);
@@ -122,57 +125,78 @@ export function renderSidebar(state: SidebarState): string[] {
         const item = items[itemIdx];
         if (!item) continue;
 
-        const isSelected = state.selectedIndex === itemIdx;
+                        const isSelected = state.selectedIndex === itemIdx;
         const isActive = isItemActive(item, state.activeFilter, state.currentPromptPath);
-
-        let prefix = ' ';
-        if (isSelected && state.focused) prefix = `${fg(C.primary)}▸${term.reset}`;
-        else if (isSelected && !state.focused) prefix = `${fg(C.dim)}▸${term.reset}`;
+        const isCursor = isSelected && state.focused;
 
         let bgStyle = '';
-        if (isActive) bgStyle = bg(C.selected);
+        if (isCursor) bgStyle = bg(C.element);
+        else if (isActive) bgStyle = bg(C.selected);
 
-        let label = '';
+        const cursorChar = isCursor ? `${fg(C.primary)}┃${term.reset}` : (isActive ? `${fg(C.dim)}┃${term.reset}` : ' ');
+
+        let nameStr = '';
+        let countStr = '';
+        
         if (item.type === 'all') {
-            const star = `${isActive ? term.bold : ''}★${term.reset}`;
-            const name = `${isActive ? term.bold : ''}All Prompts${term.reset}`;
-            label = `${prefix} ${star} ${name}`;
+            const icon = '★';
+            const nameColor = isActive ? fg(C.primaryBr) : fg(C.text);
+            const nameBold = isActive ? term.bold : '';
+            nameStr = `${icon} ${nameBold}${nameColor}All Prompts${term.reset}`;
+            
+            let tot = 0; let done = 0;
+            for (const c of state.categories) { tot += c.total; done += c.completed; }
+            countStr = `${done}/${tot}`;
         } else if (item.type === 'category') {
-            const isExpanded = state.expandedCategories.includes(item.category.id);
-            const toggleIcon = item.category.subcategories.length > 0 ? (isExpanded ? '▼' : '▸') : ' ';
-            const toggleStr = `${fg(C.muted)}${toggleIcon}${term.reset}`;
-
+            const c = item.category;
+            const icon = c.icon || '📁';
+            const nameColor = isActive ? fg(C.primaryBr) : (isCursor ? fg(C.text) : fg(C.muted));
             const nameBold = isActive ? term.bold : '';
-            const nameColor = fg(C.text);
-            const countsStr = `(${item.category.completed}/${item.category.total})`;
-
-            label = `${prefix} ${toggleStr} ${nameBold}${nameColor}${item.category.name}${term.reset} ${fg(C.dim)}${countsStr}${term.reset}`;
+            nameStr = `${icon} ${nameBold}${nameColor}${c.name}${term.reset}`;
+            countStr = `${c.completed}/${c.total}`;
         } else if (item.type === 'subcategory') {
+            const nameColor = isActive ? fg(C.primaryBr) : (isCursor ? fg(C.text) : fg(C.muted));
             const nameBold = isActive ? term.bold : '';
-            const nameColor = fg(C.text);
-            label = `  ${prefix} ${fg(C.dim)}├${term.reset} ${nameBold}${nameColor}${item.subcategory}${term.reset}`;
+            nameStr = `  ${fg(C.dim)}├${term.reset} ${nameBold}${nameColor}${item.subcategory}${term.reset}`;
         }
 
-        if (bgStyle) label = label.replaceAll(term.reset, term.reset + bgStyle);
-        const stripped = stripAnsi(label);
-        const len = stripped.length;
-
-        let padLen = 25 - len;
-
+        const countFormatted = `${fg(C.dim)}${countStr.padStart(5)}${term.reset}`;
+        
+        // Emojis screw up string length (they count as 2 chars, and take 2 columns).
+        // Let's use a standard pad to total 23 columns (since we have cursor + space = 2)
+        const rawName = stripAnsi(nameStr);
+        // JS string length for emojis is usually 2, which matches terminal width.
+        const nameLen = rawName.length;
+        
+        // Target width: 25. Cursor=1, Space=1. Content area = 23.
+        // Count needs 5 chars + 1 space padding at end = 6.
+        // Name gets the rest: 23 - 6 = 17.
+        const maxNameLen = 16;
+        let finalNameStr = nameStr;
+        let actualNameLen = nameLen;
+        
+        if (nameLen > maxNameLen) {
+            actualNameLen = maxNameLen;
+        }
+        
+        let padLen = 23 - actualNameLen - 6;
+        if (padLen < 0) padLen = 0;
+        
         let lineContent = '';
-        if (i === 0 && showUp) {
-            padLen = padLen > 1 ? padLen - 1 : 0;
-            const pad = ' ';
-            const indicator = `${fg(C.primary)}▲${term.reset}`;
-            lineContent = bgStyle ? `${bgStyle}${label}${pad}${indicator}${term.reset}` : `${label}${pad}${indicator}`;
-        } else if (i === state.height - 1 && showDown) {
-            padLen = padLen > 1 ? padLen - 1 : 0;
-            const pad = ' ';
-            const indicator = `${fg(C.primary)}▼${term.reset}`;
-            lineContent = bgStyle ? `${bgStyle}${label}${pad}${indicator}${term.reset}` : `${label}${pad}${indicator}`;
+        if (item.type === 'subcategory') {
+            const subPad = 23 - actualNameLen;
+            lineContent = `${cursorChar} ${finalNameStr}${' '.repeat(Math.max(0, subPad))}`;
         } else {
-            const pad = ''; // removed right padding to prevent Windows wrapping
-            lineContent = bgStyle ? `${bgStyle}${label}${pad}${term.reset}` : `${label}${pad}`;
+            lineContent = `${cursorChar} ${finalNameStr}${' '.repeat(padLen)} ${countFormatted}`;
+        }
+
+        if (bgStyle) lineContent = lineContent.replaceAll(term.reset, term.reset + bgStyle);
+        lineContent = bgStyle ? `${bgStyle}${lineContent}${term.reset}` : lineContent;
+
+        if (i === 0 && showUp) {
+            lineContent = lineContent.substring(0, lineContent.length - 20) + `${fg(C.primary)}▲${term.reset}`; 
+        } else if (i === state.height - 1 && showDown) {
+            lineContent = lineContent.substring(0, lineContent.length - 20) + `${fg(C.primary)}▼${term.reset}`; 
         }
 
         const borderChar = `${fg(C.border)}│${term.reset}`;
