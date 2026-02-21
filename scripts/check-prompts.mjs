@@ -78,6 +78,17 @@ const ACTION_REQUIRED = new Set([
     'DONE CONDITION',
 ]);
 
+// Load categories to validate against
+let categoriesData;
+try {
+    const catsStr = fs.readFileSync(path.join(PROMPTS_DIR, 'categories.json'), 'utf8');
+    const parsed = JSON.parse(catsStr);
+    categoriesData = parsed.categories || [];
+} catch (e) {
+    categoriesData = [];
+}
+const validCategories = new Set(categoriesData.map((c) => c.id));
+
 function listPromptFiles(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     const files = [];
@@ -168,30 +179,60 @@ function hasScopeCoverage(lines) {
 
 function validatePrompt(filePath) {
     const raw = fs.readFileSync(filePath, 'utf8');
-    const lines = raw.split(/\r?\n/);
+
+    // Frontmatter check
+    let contentToValidate = raw;
+    const errors = [];
+
+    if (raw.startsWith('---\n')) {
+        const endIndex = raw.indexOf('\n---', 4);
+        if (endIndex === -1) {
+            errors.push('Unclosed YAML frontmatter');
+        } else {
+            const fm = raw.slice(4, endIndex);
+            contentToValidate = raw.slice(endIndex + 4).replace(/^\n/, '');
+
+            // Basic field validation
+            if (!fm.includes('title:')) errors.push('Frontmatter missing title');
+            if (!fm.includes('category:')) errors.push('Frontmatter missing category');
+            if (!fm.includes('tags:')) errors.push('Frontmatter missing tags');
+            if (!fm.includes('version:')) errors.push('Frontmatter missing version');
+
+            // Category validation
+            const catMatch = fm.match(/category:\s*["']?([^"'\n\r]+)["']?/);
+            if (catMatch && validCategories.size > 0) {
+                const cat = catMatch[1].trim();
+                if (!validCategories.has(cat)) {
+                    errors.push(`Invalid category: ${cat}. Must be one of: ${[...validCategories].join(', ')}`);
+                }
+            }
+        }
+    }
+
+    const lines = contentToValidate.split(/\r?\n/);
 
     const modeIndex = lines.findIndex((line) => line.trim() === 'MODE');
     if (modeIndex === -1 || modeIndex + 1 >= lines.length) {
-        return [`Missing MODE value`];
+        errors.push(`Missing MODE value`);
+        return errors;
     }
     const modeValue = lines[modeIndex + 1].trim();
     const isAudit = modeValue.includes('Audit');
     const isAction = modeValue.includes('Action');
 
     if (!isAudit && !isAction) {
-        return [`Invalid MODE value: "${modeValue}"`];
+        errors.push(`Invalid MODE value: "${modeValue}"`);
     }
 
     const required = isAudit ? AUDIT_REQUIRED : ACTION_REQUIRED;
-    const errors = [];
 
     for (const heading of required) {
-        if (!raw.includes(heading)) {
+        if (!contentToValidate.includes(heading)) {
             errors.push(`Missing required heading: ${heading}`);
         }
     }
 
-    if (!raw.includes('OUTPUT FORMAT (STRICT)')) {
+    if (!contentToValidate.includes('OUTPUT FORMAT (STRICT)')) {
         errors.push('OUTPUT FORMAT must be marked (STRICT)');
     }
 

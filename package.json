@@ -1,68 +1,81 @@
 {
-  "name": "redpen",
-  "version": "1.6.2",
-  "description": "A senior engineer review system in a box. Production-grade prompts for auditing AI-assisted codebases.",
-  "main": "index.js",
-  "bin": {
-    "redpen": "bin/cli.js"
-  },
-  "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "check:prompts": "node scripts/check-prompts.mjs",
-    "verify": "node scripts/check-prompts.mjs",
-    "format": "prettier --write .",
-    "prepare": "husky",
-    "release": "node scripts/release.mjs"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ndycode/redpen.git"
-  },
-  "keywords": [
-    "code-review",
-    "prompts",
-    "audit",
-    "vibecoding",
-    "ai-coding",
-    "quality",
-    "guardrails",
-    "nextjs",
-    "supabase",
-    "production"
-  ],
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ndycode/redpen/issues"
-  },
-  "homepage": "https://github.com/ndycode/redpen#readme",
-  "files": [
-    "bin/",
-    "lib/",
-    "prompts/",
-    "scripts/",
-    "workflow/",
-    "index.js"
-  ],
-  "engines": {
-    "node": ">=16.0.0"
-  },
-  "devDependencies": {
-    "@vitest/coverage-v8": "1.6.0",
-    "eslint": "^8.57.0",
-    "husky": "9.1.7",
-    "lint-staged": "16.2.7",
-    "prettier": "^3.2.5",
-    "vitest": "^1.6.0"
-  },
-  "lint-staged": {
-    "*.js": [
-      "eslint --fix",
-      "prettier --write"
-    ]
-  }
+    "name": "redpen",
+    "version": "2.0.0",
+    "description": "A senior engineer review system in a box. Production-grade prompts for auditing AI-assisted codebases.",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./index.cjs",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "bin": {
+        "redpen": "dist/cli/index.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "check:prompts": "node scripts/check-prompts.mjs",
+        "verify": "node scripts/check-prompts.mjs",
+        "format": "prettier --write .",
+        "prepare": "husky",
+        "release": "node scripts/release.mjs"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ndycode/redpen.git"
+    },
+    "keywords": [
+        "code-review",
+        "prompts",
+        "audit",
+        "vibecoding",
+        "ai-coding",
+        "quality",
+        "guardrails",
+        "nextjs",
+        "supabase",
+        "production"
+    ],
+    "author": "",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ndycode/redpen/issues"
+    },
+    "homepage": "https://github.com/ndycode/redpen#readme",
+    "files": [
+        "dist/",
+        "prompts/",
+        "skills/",
+        "scripts/"
+    ],
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^22.19.11",
+        "@typescript-eslint/eslint-plugin": "^8.56.0",
+        "@typescript-eslint/parser": "^8.56.0",
+        "@vitest/coverage-v8": "1.6.0",
+        "eslint": "^8.57.0",
+        "husky": "9.1.7",
+        "lint-staged": "16.2.7",
+        "prettier": "^3.2.5",
+        "typescript": "^5.9.3",
+        "vitest": "^1.6.0"
+    },
+    "lint-staged": {
+        "*.{js,ts}": [
+            "eslint --fix",
+            "prettier --write"
+        ]
+    }
 }
