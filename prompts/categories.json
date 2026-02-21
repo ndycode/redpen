@@ -2,88 +2,81 @@
   "version": "2.0.0",
   "categories": [
     {
-      "id": "core/security",
-      "name": "Security",
-      "icon": "🔒",
-      "description": "Authentication, authorization, data safety, access control",
+      "id": "core/planning",
+      "name": "Planning",
+      "icon": "📋",
+      "description": "Feature breakdown, PRDs, sprint planning",
       "sortOrder": 1
     },
     {
-      "id": "core/quality",
-      "name": "Quality",
-      "icon": "✨",
-      "description": "Test coverage, error handling, code quality",
+      "id": "core/design",
+      "name": "Design",
+      "icon": "📐",
+      "description": "System design, API contracts, UI/UX architecture",
       "sortOrder": 2
     },
     {
       "id": "core/architecture",
       "name": "Architecture",
       "icon": "🏗️",
-      "description": "Logging, monitoring, observability, system design",
+      "description": "State management, scalability, patterns",
       "sortOrder": 3
     },
     {
-      "id": "core/process",
-      "name": "Process",
-      "icon": "📋",
-      "description": "Documentation, code standards, workflow",
+      "id": "core/security",
+      "name": "Security",
+      "icon": "🔒",
+      "description": "OWASP, Auth flows, cryptography",
       "sortOrder": 4
+    },
+    {
+      "id": "core/refactoring",
+      "name": "Refactoring",
+      "icon": "♻️",
+      "description": "SOLID, DRY, complexity reduction",
+      "sortOrder": 5
+    },
+    {
+      "id": "core/debugging",
+      "name": "Debugging",
+      "icon": "🐛",
+      "description": "Root cause analysis, memory leaks",
+      "sortOrder": 6
+    },
+    {
+      "id": "core/quality",
+      "name": "Quality",
+      "icon": "✨",
+      "description": "Code review, testing, error handling",
+      "sortOrder": 7
     },
     {
       "id": "web/frontend",
       "name": "Frontend",
       "icon": "🎨",
-      "description": "React, Next.js, Vue, Svelte, CSS, accessibility",
-      "sortOrder": 5
+      "description": "React, Vue, styling, accessibility",
+      "sortOrder": 8
     },
     {
       "id": "web/backend",
       "name": "Backend",
       "icon": "⚙️",
-      "description": "APIs, databases, Supabase, Firebase, Prisma",
-      "sortOrder": 6
+      "description": "Databases, API routes, middleware",
+      "sortOrder": 9
     },
     {
       "id": "mobile",
       "name": "Mobile",
       "icon": "📱",
-      "description": "Flutter, React Native, native iOS/Android",
-      "sortOrder": 7
-    },
-    {
-      "id": "ai/integration",
-      "name": "AI Integration",
-      "icon": "🧠",
-      "description": "AI SDK usage, LLM integration, embedding",
-      "sortOrder": 8
-    },
-    {
-      "id": "ai/agents",
-      "name": "AI Agents",
-      "icon": "🤖",
-      "description": "Agent orchestration, tool design, multi-agent",
-      "sortOrder": 9
-    },
-    {
-      "id": "ai/tools",
-      "name": "AI Tools",
-      "icon": "🧰",
-      "description": "MCP servers, function calling, tool patterns",
+      "description": "React Native, Flutter",
       "sortOrder": 10
     },
     {
-      "id": "devops/git",
-      "name": "Git",
-      "icon": "🌿",
-      "description": "Git workflow, branching, PR standards",
-      "sortOrder": 11
-    },
-    {
-      "id": "devops/ci",
-      "name": "CI/CD",
+      "id": "devops",
+      "name": "DevOps",
       "icon": "🚀",
-      "description": "CI/CD pipelines, deployment, testing automation",
-      "sortOrder": 12
+      "description": "CI/CD, Docker",
+      "sortOrder": 11
     }
   ]
 }
