@@ -1002,7 +1002,7 @@ export class TUI {
         const shortcuts = [
             ['Navigation', ''],
             ['  ← → h l', 'Previous / Next prompt'],
-            ['  ↑ ↓ k j', 'Previous / Next prompt'],
+            ['  ↑ ↓ k j', 'Navigate Sidebar (when focused)'],
             ['  Home End', 'First / Last prompt'],
             ['  n', 'Jump to next incomplete'],
             ['', ''],
