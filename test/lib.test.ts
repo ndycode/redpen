@@ -1,3 +1,8 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import * as lib from '../src/lib/index.js';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // globals: true in vitest.config — describe/it/expect/vi available globally
 // vi.mock must be top-level (vitest hoists it)
 
@@ -5,7 +10,7 @@ vi.mock('child_process', () => ({
     execSync: vi.fn(() => 'https://github.com/test/repo.git\n'),
 }));
 
-const lib = require('../lib/index.cjs');
+
 
 describe('config', () => {
     describe('getConfigDir', () => {
