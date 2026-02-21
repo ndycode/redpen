@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { execSync } from 'node:child_process';
-import { getConfigFile, getProjectDir as getLegacyProjectDir, loadConfig, DEFAULTS } from '../lib/config.js';
+import { getConfigFile, loadConfig } from '../lib/config.js';
 import { getStateDir, getSkillsDir } from '../state/paths.js';
 import { PROMPTS_DIR, CUSTOM_DIR, scanDirRecursive, parsePromptMetadata } from '../lib/prompts.js';
 
