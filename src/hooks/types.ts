@@ -28,6 +28,8 @@ export type HookHandlerMap = Partial<Record<HookEvent, HookHandler | HookHandler
 
 export type NormalizedHookMap = Partial<Record<HookEvent, HookHandler[]>>;
 
+export type HookDisposer = () => void;
+
 export interface HookRegistrationMetadata {
     pluginId?: string;
     pluginName?: string;

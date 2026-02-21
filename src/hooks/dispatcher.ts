@@ -1,4 +1,5 @@
 import type {
+    HookDisposer,
     HookEmitError,
     HookEmitResult,
     HookEvent,
@@ -34,12 +35,36 @@ export function registerHook(
     event: HookEvent,
     handler: HookHandler,
     details: HookRegistrationMetadata = {}
-): () => void {
+): HookDisposer {
     const handlers = registry.get(event) ?? new Set<HookHandler>();
     handlers.add(handler);
     registry.set(event, handlers);
     metadata.set(handler, details);
     return () => removeHook(event, handler);
+}
+
+export function registerHookOnce(
+    event: HookEvent,
+    handler: HookHandler,
+    details: HookRegistrationMetadata = {}
+): HookDisposer {
+    let disposed = false;
+    let dispose: HookDisposer = () => undefined;
+
+    const wrapper: HookHandler = async (context) => {
+        if (disposed) return;
+        disposed = true;
+        dispose();
+        await Promise.resolve(handler(context));
+    };
+
+    dispose = registerHook(event, wrapper, details);
+
+    return () => {
+        if (disposed) return;
+        disposed = true;
+        dispose();
+    };
 }
 
 export function removeHook(event: HookEvent, handler: HookHandler): void {

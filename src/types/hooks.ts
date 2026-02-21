@@ -6,6 +6,7 @@ export {
     type HookEventContext,
     type HookHandler,
     type HookHandlerMap,
+    type HookDisposer,
     type HookPayload,
     type HookRegistrationMetadata,
     type NormalizedHookMap,
