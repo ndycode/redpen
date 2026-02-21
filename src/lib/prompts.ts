@@ -135,36 +135,34 @@ export function parsePromptMetadata(content: string): ParsedFrontmatter {
 export function buildRunOrder(config: typeof DEFAULTS): string[] {
     const prompts: string[] = [];
 
-    for (const category of ['security', 'quality', 'architecture', 'process']) {
-        prompts.push(...scanDir(path.join(PROMPTS_DIR, 'core', category)));
+    let catsRaw: any[] = [];
+    try {
+        const raw = fs.readFileSync(path.join(PROMPTS_DIR, 'categories.json'), 'utf8');
+        catsRaw = JSON.parse(raw).categories || [];
+    } catch {
+        catsRaw = [];
     }
 
-    prompts.push(...scanDirRecursive(path.join(PROMPTS_DIR, 'ai')));
-    prompts.push(...scanDirRecursive(path.join(PROMPTS_DIR, 'devops')));
+    for (const cat of catsRaw) {
+        if (cat.id.startsWith('web/') && config.platform !== 'web') continue;
+        if (cat.id.startsWith('mobile') && config.platform !== 'mobile') continue;
 
-    if (config.platform === 'mobile') {
-        prompts.push(...scanDirRecursive(path.join(PROMPTS_DIR, 'mobile', 'core')));
-        if (config.framework && config.framework !== 'none') {
-            prompts.push(...scanDirRecursive(path.join(PROMPTS_DIR, 'mobile', config.framework)));
+        if (cat.id === 'web/frontend' && config.frontend === 'none') continue;
+        if (cat.id === 'web/backend' && config.backend === 'none') continue;
+
+        const catPath = path.join(PROMPTS_DIR, ...cat.id.split('/'));
+        if (fs.existsSync(catPath)) {
+            prompts.push(...scanDirRecursive(catPath));
         }
-    } else {
-        prompts.push(...scanDir(path.join(PROMPTS_DIR, 'web', 'frontend')));
-        if (config.frontend && config.frontend !== 'none') {
-            prompts.push(...scanDir(path.join(PROMPTS_DIR, 'web', 'frontend', config.frontend)));
-            prompts.push(...scanDir(path.join(PROMPTS_DIR, 'web', 'interface')));
-        }
-        if (config.backend && config.backend !== 'none') {
-            prompts.push(...scanDir(path.join(PROMPTS_DIR, 'web', 'backend', config.backend)));
-        }
-        prompts.push(...scanDir(path.join(PROMPTS_DIR, 'web', 'product')));
-        prompts.push(...scanDir(path.join(PROMPTS_DIR, 'web', 'growth')));
     }
 
     if (fs.existsSync(CUSTOM_DIR)) {
         prompts.push(...scanDirRecursive(CUSTOM_DIR));
     }
 
-    return prompts.map((p) => {
+    const uniquePrompts = Array.from(new Set(prompts));
+
+    return uniquePrompts.map((p) => {
         if (p.startsWith(CUSTOM_DIR)) {
             return 'custom/' + path.relative(CUSTOM_DIR, p).replace(/\\/g, '/');
         }
