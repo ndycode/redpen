@@ -153,6 +153,7 @@ export function renderSidebar(state: SidebarState): string[] {
             label = `  ${prefix} ${fg(C.dim)}├${term.reset} ${nameBold}${nameColor}${item.subcategory}${term.reset}`;
         }
 
+        if (bgStyle) label = label.replaceAll(term.reset, term.reset + bgStyle);
         const stripped = stripAnsi(label);
         const len = stripped.length;
 

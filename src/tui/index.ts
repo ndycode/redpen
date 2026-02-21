@@ -443,7 +443,7 @@ export class InitTUI {
         if (this.W >= 80) {
             const sidebarLines = renderSidebar(this.sidebarState);
             for (let i = 0; i < H; i++) {
-                const sl = sidebarLines[i] || (' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`);
+                const sl = sidebarLines[i] || ' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`;
                 const lineBase = out[i] || ' '.repeat(W);
                 out[i] = lineBase + sl;
             }
@@ -461,7 +461,7 @@ export class TUI {
         scrollTop: 0,
         height: 20,
         categories: [],
-        currentPromptPath: null
+        currentPromptPath: null,
     };
     constructor() {
         this.W = process.stdout.columns || 80;
@@ -490,11 +490,10 @@ export class TUI {
         this.startMain();
     }
 
-    
     loadSidebarCategories() {
         const runOrder = getRunOrder();
         const progress = getProgress();
-        
+
         let catsRaw = [];
         try {
             const raw = fs.readFileSync(path.join(__dirname, '../../prompts/categories.json'), 'utf8');
@@ -502,14 +501,14 @@ export class TUI {
         } catch {
             catsRaw = [];
         }
-        
+
         const categories = [];
         for (const rawCat of catsRaw) {
-            const promptsInCat = runOrder.filter(p => p.startsWith(rawCat.id + '/'));
+            const promptsInCat = runOrder.filter((p) => p.startsWith(rawCat.id + '/'));
             if (promptsInCat.length === 0) continue;
-            
-            const completed = promptsInCat.filter(p => progress.completed.includes(p)).length;
-            
+
+            const completed = promptsInCat.filter((p) => progress.completed.includes(p)).length;
+
             const subSet = new Set();
             for (const p of promptsInCat) {
                 const parts = p.substring(rawCat.id.length + 1).split('/');
@@ -517,29 +516,29 @@ export class TUI {
                     subSet.add(parts[0]);
                 }
             }
-            
+
             categories.push({
                 id: rawCat.id,
                 name: rawCat.name || rawCat.id,
                 subcategories: Array.from(subSet).sort(),
                 completed,
-                total: promptsInCat.length
+                total: promptsInCat.length,
             });
         }
-        
+
         this.sidebarState.categories = categories;
     }
 
     getFilteredItems() {
         const activeFilter = this.sidebarState.activeFilter;
         if (!activeFilter.categoryId) return this.items;
-        
+
         if (activeFilter.subcategory) {
             const prefix = activeFilter.categoryId + '/' + activeFilter.subcategory + '/';
-            return this.items.filter(p => p.startsWith(prefix));
+            return this.items.filter((p) => p.startsWith(prefix));
         } else {
             const prefix = activeFilter.categoryId + '/';
-            return this.items.filter(p => p.startsWith(prefix));
+            return this.items.filter((p) => p.startsWith(prefix));
         }
     }
 
@@ -603,11 +602,21 @@ export class TUI {
         }
 
         if (this.sidebarState.focused && this.W >= 80) {
-            if (s === '\x1b[A' || s === '\x1bOA' || s === 'k' || 
-                s === '\x1b[B' || s === '\x1bOB' || s === 'j' ||
-                s === '\r' || s === '\n' || s === ' ') {
+            if (
+                s === '\x1b[A' ||
+                s === '\x1bOA' ||
+                s === 'k' ||
+                s === '\x1b[B' ||
+                s === '\x1bOB' ||
+                s === 'j' ||
+                s === '\r' ||
+                s === '\n' ||
+                s === ' '
+            ) {
                 this.sidebarState = handleSidebarKey(s, this.sidebarState);
-                this.idx = 0;
+                if (s === '\r' || s === '\n' || s === ' ') {
+                    this.idx = 0;
+                }
                 return;
             }
         }
@@ -791,7 +800,7 @@ export class TUI {
         const currentItems = this.getFilteredItems();
         if (this.idx >= currentItems.length) this.idx = Math.max(0, currentItems.length - 1);
         this.sidebarState.currentPromptPath = currentItems[this.idx] || null;
-        
+
         const W = this.W >= 80 ? this.W - 26 : this.W;
         const H = this.H;
         const progress = getProgress();
@@ -893,7 +902,7 @@ export class TUI {
         if (this.W >= 80) {
             const sidebarLines = renderSidebar(this.sidebarState);
             for (let i = 0; i < H; i++) {
-                const sl = sidebarLines[i] || (' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`);
+                const sl = sidebarLines[i] || ' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`;
                 const lineBase = out[i] || ' '.repeat(W);
                 out[i] = lineBase + sl;
             }
@@ -960,7 +969,7 @@ export class TUI {
         if (this.W >= 80) {
             const sidebarLines = renderSidebar(this.sidebarState);
             for (let i = 0; i < H; i++) {
-                const sl = sidebarLines[i] || (' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`);
+                const sl = sidebarLines[i] || ' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`;
                 const lineBase = out[i] || ' '.repeat(W);
                 out[i] = lineBase + sl;
             }
@@ -1027,7 +1036,7 @@ export class TUI {
         if (this.W >= 80) {
             const sidebarLines = renderSidebar(this.sidebarState);
             for (let i = 0; i < H; i++) {
-                const sl = sidebarLines[i] || (' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`);
+                const sl = sidebarLines[i] || ' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`;
                 const lineBase = out[i] || ' '.repeat(W);
                 out[i] = lineBase + sl;
             }
@@ -1035,6 +1044,3 @@ export class TUI {
         process.stdout.write(term.home + out.slice(0, H).join('\n'));
     }
 }
-
-
-
