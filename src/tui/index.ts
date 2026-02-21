@@ -620,9 +620,9 @@ export class TUI {
                 return;
             }
         }
-        if (s === '\x1b[D' || s === '\x1bOD' || s === 'h' || s === '\x1b[A' || s === '\x1bOA' || s === 'k') {
+        if (s === '\x1b[D' || s === '\x1bOD' || s === 'h') {
             this.idx = Math.max(0, this.idx - 1);
-        } else if (s === '\x1b[C' || s === '\x1bOC' || s === 'l' || s === '\x1b[B' || s === '\x1bOB' || s === 'j') {
+        } else if (s === '\x1b[C' || s === '\x1bOC' || s === 'l') {
             this.idx = Math.min(this.items.length - 1, this.idx + 1);
         } else if (s === '\x1b[H' || s === '\x1b[1~') this.idx = 0;
         else if (s === '\x1b[F' || s === '\x1b[4~') this.idx = this.items.length - 1;
