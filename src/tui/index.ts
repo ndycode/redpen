@@ -846,7 +846,7 @@ export class TUI {
         );
         out.push('');
 
-        const barW = Math.min(60, W - 20);
+        const barW = Math.max(0, Math.min(60, W - 20));
         const filled = total > 0 ? Math.round((done / total) * barW) : 0;
         const pct = total > 0 ? Math.round((done / total) * 100) : 0;
         const bar = `${fg(C.primary)}${'━'.repeat(filled)}${fg(C.border)}${'━'.repeat(barW - filled)}${term.reset}`;
