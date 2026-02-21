@@ -1008,8 +1008,5 @@ export class TUI {
     }
 }
 
-module.exports = { TUI, InitTUI };
 
-if (require.main === module) {
-    new TUI().start();
-}
+
