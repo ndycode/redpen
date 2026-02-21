@@ -888,7 +888,7 @@ export class TUI {
     }
 
     renderSearch() {
-        const W = this.W;
+        const W = this.W >= 80 ? this.W - 26 : this.W;
         const H = this.H;
         const progress = getProgress();
 
@@ -948,7 +948,7 @@ export class TUI {
     }
 
     renderHelp() {
-        const W = this.W;
+        const W = this.W >= 80 ? this.W - 26 : this.W;
         const H = this.H;
 
         const out = [];
