@@ -115,7 +115,7 @@ export function renderSidebar(state: SidebarState): string[] {
     for (let i = 0; i < state.height; i++) {
         const itemIdx = startIdx + i;
         if (itemIdx >= items.length) {
-            lines.push(`${fg(C.border)}│${term.reset}` + ' '.repeat(25));
+            lines.push(`${fg(C.border)}│${term.reset}`);
             continue;
         }
 
@@ -161,16 +161,16 @@ export function renderSidebar(state: SidebarState): string[] {
         let lineContent = '';
         if (i === 0 && showUp) {
             padLen = padLen > 1 ? padLen - 1 : 0;
-            const pad = ' '.repeat(padLen);
+            const pad = ' ';
             const indicator = `${fg(C.primary)}▲${term.reset}`;
             lineContent = bgStyle ? `${bgStyle}${label}${pad}${indicator}${term.reset}` : `${label}${pad}${indicator}`;
         } else if (i === state.height - 1 && showDown) {
             padLen = padLen > 1 ? padLen - 1 : 0;
-            const pad = ' '.repeat(padLen);
+            const pad = ' ';
             const indicator = `${fg(C.primary)}▼${term.reset}`;
             lineContent = bgStyle ? `${bgStyle}${label}${pad}${indicator}${term.reset}` : `${label}${pad}${indicator}`;
         } else {
-            const pad = padLen > 0 ? ' '.repeat(padLen) : '';
+            const pad = ''; // removed right padding to prevent Windows wrapping
             lineContent = bgStyle ? `${bgStyle}${label}${pad}${term.reset}` : `${label}${pad}`;
         }
 

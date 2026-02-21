@@ -445,7 +445,7 @@ export class InitTUI {
             for (let i = 0; i < H; i++) {
                 const sl = sidebarLines[i] || (' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`);
                 const lineBase = out[i] || ' '.repeat(W);
-                out[i] = lineBase + '  ' + sl;
+                out[i] = lineBase + sl;
             }
         }
         process.stdout.write(term.home + out.slice(0, H).join('\n'));
@@ -895,7 +895,7 @@ export class TUI {
             for (let i = 0; i < H; i++) {
                 const sl = sidebarLines[i] || (' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`);
                 const lineBase = out[i] || ' '.repeat(W);
-                out[i] = lineBase + '  ' + sl;
+                out[i] = lineBase + sl;
             }
         }
         process.stdout.write(term.home + out.slice(0, H).join('\n'));
@@ -962,7 +962,7 @@ export class TUI {
             for (let i = 0; i < H; i++) {
                 const sl = sidebarLines[i] || (' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`);
                 const lineBase = out[i] || ' '.repeat(W);
-                out[i] = lineBase + '  ' + sl;
+                out[i] = lineBase + sl;
             }
         }
         process.stdout.write(term.home + out.slice(0, H).join('\n'));
@@ -1029,7 +1029,7 @@ export class TUI {
             for (let i = 0; i < H; i++) {
                 const sl = sidebarLines[i] || (' '.repeat(25) + `\x1b[38;2;50;50;50m│\x1b[0m`);
                 const lineBase = out[i] || ' '.repeat(W);
-                out[i] = lineBase + '  ' + sl;
+                out[i] = lineBase + sl;
             }
         }
         process.stdout.write(term.home + out.slice(0, H).join('\n'));
