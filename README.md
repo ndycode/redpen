@@ -7,7 +7,7 @@
 
 A senior engineer review system in a box. Production-grade prompts for auditing AI-assisted codebases.
 
-**v2.0.0 is here!** Now featuring **team orchestration**, a massive library of 116+ prompts, and a fully interactive **TUI** with category sidebars.
+**v1.6.2 is here!** Now featuring **team orchestration**, a massive library of 116+ prompts, and a fully interactive **TUI** with category sidebars.
 
 ## Installation
 
